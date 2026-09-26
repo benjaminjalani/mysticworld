@@ -1,0 +1,460 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Booking Management | MysticWorld Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --white:#fff;
+  --off:#f8f7f4;
+  --border:#e2ddd6;
+  --muted:#9a9189;
+  --ink:#0d1b2a;
+  --amber:#e8920a;
+  --amber-dark:#c97c06;
+  --green:#2a9d5c;
+  --green-bg:#edf7f1;
+  --green-text:#1a7040;
+  --red:#dc3545;
+  --red-bg:#fdeaec;
+  --red-text:#9b2335;
+  --blue:#2874f0;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Plus Jakarta Sans',sans-serif;background:var(--off);color:var(--ink);}
+
+header{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+nav{max-width:1500px;margin:auto;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;}
+.logo{font-family:'Playfair Display',serif;font-weight:900;font-size:1.4rem;}
+.logo span{color:var(--amber);}
+.admin-badge{font-size:.72rem;background:#f3ede4;color:var(--amber-dark);padding:3px 10px;border-radius:20px;font-weight:500;}
+.nav-links{display:flex;gap:1.5rem;align-items:center;}
+.nav-links a{text-decoration:none;font-size:.83rem;color:var(--muted);}
+.nav-links a:hover{color:var(--ink);}
+.nav-links a.active{color:var(--ink);font-weight:500;}
+
+.page{max-width:1500px;margin:auto;padding:32px 2rem 60px;}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
+.page-title{font-family:'Playfair Display',serif;font-size:1.7rem;margin:0;}
+.page-sub{font-size:.82rem;color:var(--muted);margin-top:3px;}
+
+/* STAT CARDS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px 20px;}
+.stat-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;}
+.stat-value{font-size:1.7rem;font-weight:600;line-height:1;}
+.stat-sub{font-size:.75rem;color:var(--muted);margin-top:5px;}
+.stat-card.green .stat-value{color:var(--green);}
+.stat-card.red .stat-value{color:var(--red);}
+.stat-card.amber .stat-value{color:var(--amber);}
+
+/* FILTERS */
+.filters{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:22px;}
+.filter-row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;}
+.filter-group{display:flex;flex-direction:column;gap:5px;}
+.filter-group label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+.filter-group input,
+.filter-group select{padding:8px 12px;border:1px solid var(--border);border-radius:7px;font-family:inherit;font-size:.85rem;background:#fff;color:var(--ink);outline:none;transition:.2s;}
+.filter-group input:focus,
+.filter-group select:focus{border-color:var(--amber);}
+.search-input{min-width:240px;}
+.filter-btn{padding:9px 18px;background:var(--amber);color:#fff;border:none;border-radius:7px;font-size:.85rem;cursor:pointer;font-family:inherit;transition:.2s;}
+.filter-btn:hover{background:var(--amber-dark);}
+.reset-btn{padding:9px 14px;background:#fff;color:var(--muted);border:1px solid var(--border);border-radius:7px;font-size:.85rem;cursor:pointer;font-family:inherit;text-decoration:none;transition:.2s;}
+.reset-btn:hover{color:var(--ink);}
+
+/* SORT ROW */
+.table-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.table-info{font-size:.83rem;color:var(--muted);}
+.sort-group{display:flex;align-items:center;gap:8px;font-size:.83rem;color:var(--muted);}
+.sort-group select{padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:.83rem;font-family:inherit;background:#fff;color:var(--ink);outline:none;}
+
+/* TABLE */
+.table-wrap{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.table-scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:.85rem;}
+thead th{padding:11px 14px;text-align:left;font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--border);white-space:nowrap;background:var(--off);}
+tbody tr{border-bottom:1px solid #f0ece6;transition:.15s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:#fdfcfa;}
+tbody tr.cancelled{background:#fff8f8;}
+tbody tr.cancelled:hover{background:#fef2f2;}
+td{padding:12px 14px;vertical-align:middle;}
+.booking-id{font-weight:500;font-size:.8rem;color:var(--muted);font-family:monospace;}
+.visitor-cell{display:flex;align-items:center;gap:9px;}
+.avatar-sm{width:30px;height:30px;border-radius:50%;background:#f3ede4;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:600;color:var(--amber-dark);flex-shrink:0;}
+.visitor-name{font-weight:500;font-size:.87rem;}
+.visitor-email{font-size:.75rem;color:var(--muted);}
+.amount{font-weight:600;}
+
+/* STATUS BADGE */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:500;}
+.badge.confirmed{background:var(--green-bg);color:var(--green-text);}
+.badge.cancelled{background:var(--red-bg);color:var(--red-text);}
+
+/* ACTION BUTTONS */
+.action-cell{display:flex;gap:6px;align-items:center;}
+.btn-view{padding:5px 12px;background:#fff;border:1px solid var(--border);border-radius:5px;font-size:.78rem;cursor:pointer;color:var(--blue);font-family:inherit;transition:.2s;text-decoration:none;}
+.btn-view:hover{background:#eef4fe;border-color:#b5d4f4;}
+.btn-cancel{padding:5px 10px;background:#fff;border:1px solid var(--border);border-radius:5px;font-size:.78rem;cursor:pointer;color:var(--red);font-family:inherit;transition:.2s;}
+.btn-cancel:hover{background:var(--red-bg);border-color:#f09595;}
+.btn-delete{padding:5px 10px;background:#fff;border:1px solid var(--border);border-radius:5px;font-size:.78rem;cursor:pointer;color:var(--muted);font-family:inherit;transition:.2s;}
+.btn-delete:hover{background:#f5f5f5;color:var(--ink);}
+
+/* MODAL OVERLAY */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(13,27,42,.45);z-index:500;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:#fff;border-radius:12px;width:560px;max-width:95vw;max-height:90vh;overflow-y:auto;padding:28px;}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.2rem;margin:0;}
+.modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--muted);line-height:1;padding:0;}
+.modal-close:hover{color:var(--ink);}
+.modal-section{margin-bottom:20px;}
+.modal-section h4{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 10px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.info-item{background:var(--off);border-radius:7px;padding:9px 12px;}
+.info-item .il{font-size:.7rem;color:var(--muted);margin-bottom:2px;}
+.info-item .iv{font-size:.87rem;font-weight:500;}
+.rides-table{width:100%;border-collapse:collapse;font-size:.83rem;}
+.rides-table th{text-align:left;padding:7px 10px;border-bottom:1px solid var(--border);font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+.rides-table td{padding:8px 10px;border-bottom:1px solid #f0ece6;}
+.rides-table tr:last-child td{border-bottom:none;}
+.total-row{display:flex;justify-content:space-between;align-items:center;background:var(--off);border-radius:7px;padding:11px 14px;margin-top:12px;}
+.total-row .tl{font-size:.83rem;color:var(--muted);}
+.total-row .tv{font-size:1.1rem;font-weight:600;}
+.modal-status{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.modal-status select{padding:7px 12px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:.85rem;outline:none;}
+.modal-status select:focus{border-color:var(--amber);}
+.btn-save{padding:8px 18px;background:var(--amber);color:#fff;border:none;border-radius:6px;font-size:.85rem;cursor:pointer;font-family:inherit;transition:.2s;}
+.btn-save:hover{background:var(--amber-dark);}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:50px 20px;color:var(--muted);}
+.empty-icon{font-size:2.5rem;margin-bottom:12px;}
+.empty p{font-size:.9rem;}
+
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:20px;}
+.pagination a,.pagination span{padding:6px 12px;border:1px solid var(--border);border-radius:6px;font-size:.83rem;text-decoration:none;color:var(--ink);background:#fff;transition:.15s;}
+.pagination a:hover{background:var(--off);}
+.pagination .current{background:var(--amber);color:#fff;border-color:var(--amber);}
+
+footer{background:var(--ink);color:#fff;padding:30px 2rem;margin-top:0;}
+.footer-inner{max-width:1500px;margin:auto;display:flex;align-items:center;justify-content:space-between;font-size:.78rem;color:rgba(255,255,255,.4);}
+.footer-logo{font-family:'Playfair Display',serif;font-size:1.1rem;color:#fff;}
+.footer-logo span{color:var(--amber);}
+
+@media(max-width:1000px){.stats{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.stats{grid-template-columns:1fr 1fr;}.filter-row{flex-direction:column;}.search-input{min-width:100%;}}
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="logo">Mystic<span>World</span></div>
+      <div class="admin-badge">Admin</div>
+    </div>
+    <div class="nav-links">
+      <a href="{% url 'home' %}">Site</a>
+      <a href="{% url 'admin_bookings' %}" class="active">Bookings</a>
+      <a href="{% url 'logout' %}">Logout</a>
+    </div>
+  </nav>
+</header>
+
+<div class="page">
+
+  <div class="page-header">
+    <div>
+      <div class="page-title">Booking Management</div>
+      <div class="page-sub">Monitor, filter and manage all visitor bookings</div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card amber">
+      <div class="stat-label">Total Bookings</div>
+      <div class="stat-value">{{ total_bookings }}</div>
+      <div class="stat-sub">All time</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Total Revenue</div>
+      <div class="stat-value">₹{{ total_revenue|default:0 }}</div>
+      <div class="stat-sub">Confirmed only</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-label">Cancelled</div>
+      <div class="stat-value">{{ cancelled_count }}</div>
+      <div class="stat-sub">Bookings cancelled</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Visitors</div>
+      <div class="stat-value">{{ total_visitors }}</div>
+      <div class="stat-sub">Registered accounts</div>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <form method="GET" class="filters">
+    <div class="filter-row">
+      <div class="filter-group" style="flex:1;min-width:200px;">
+        <label>Search</label>
+        <input class="search-input" type="text" name="search" value="{{ request.GET.search }}" placeholder="Name, username, email, booking ID…">
+      </div>
+      <div class="filter-group">
+        <label>Status</label>
+        <select name="status">
+          <option value="">All</option>
+          <option value="Confirmed" {% if request.GET.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+          <option value="Cancelled" {% if request.GET.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Booking Date From</label>
+        <input type="date" name="date_from" value="{{ request.GET.date_from }}">
+      </div>
+      <div class="filter-group">
+        <label>Booking Date To</label>
+        <input type="date" name="date_to" value="{{ request.GET.date_to }}">
+      </div>
+      <div class="filter-group">
+        <label>Visit Date</label>
+        <input type="date" name="visit_date" value="{{ request.GET.visit_date }}">
+      </div>
+      <div class="filter-group">
+        <label>Min Amount (₹)</label>
+        <input type="number" name="min_amount" value="{{ request.GET.min_amount }}" placeholder="0" style="width:110px;">
+      </div>
+      <div class="filter-group">
+        <label>Max Amount (₹)</label>
+        <input type="number" name="max_amount" value="{{ request.GET.max_amount }}" placeholder="Any" style="width:110px;">
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-end;">
+        <button class="filter-btn" type="submit">Apply</button>
+        <a class="reset-btn" href="{% url 'admin_bookings' %}">Reset</a>
+      </div>
+    </div>
+  </form>
+
+  <!-- TABLE TOOLBAR -->
+  <div class="table-toolbar">
+    <div class="table-info">{{ bookings.count }} booking{{ bookings.count|pluralize }} found</div>
+    <form method="GET" class="sort-group">
+      {% for key, val in request.GET.items %}
+        {% if key != 'sort' %}<input type="hidden" name="{{ key }}" value="{{ val }}">{% endif %}
+      {% endfor %}
+      <label for="sort">Sort by</label>
+      <select id="sort" name="sort" onchange="this.form.submit()">
+        <option value="-booking_date" {% if request.GET.sort == '-booking_date' or not request.GET.sort %}selected{% endif %}>Latest first</option>
+        <option value="booking_date" {% if request.GET.sort == 'booking_date' %}selected{% endif %}>Oldest first</option>
+        <option value="-total_amount" {% if request.GET.sort == '-total_amount' %}selected{% endif %}>Highest amount</option>
+        <option value="total_amount" {% if request.GET.sort == 'total_amount' %}selected{% endif %}>Lowest amount</option>
+      </select>
+    </form>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Booking ID</th>
+            <th>Visitor</th>
+            <th>Booking Date</th>
+            <th>Visit Date</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for booking in bookings %}
+          <tr class="{% if booking.status == 'Cancelled' %}cancelled{% endif %}">
+            <td><span class="booking-id">#{{ booking.id|stringformat:"05d" }}</span></td>
+            <td>
+              <div class="visitor-cell">
+                <div class="avatar-sm">{{ booking.visitor.name|slice:":2"|upper }}</div>
+                <div>
+                  <div class="visitor-name">{{ booking.visitor.name }}</div>
+                  <div class="visitor-email">{{ booking.visitor.email }}</div>
+                </div>
+              </div>
+            </td>
+            <td>{{ booking.booking_date|date:"d M Y" }}</td>
+            <td>{{ booking.visit_date|date:"d M Y"|default:"—" }}</td>
+            <td><span class="amount">₹{{ booking.total_amount }}</span></td>
+            <td>
+              <span class="badge {% if booking.status == 'Confirmed' %}confirmed{% else %}cancelled{% endif %}">
+                {{ booking.status }}
+              </span>
+            </td>
+            <td>
+              <div class="action-cell">
+                <button class="btn-view" onclick="openModal({{ booking.id }})">View</button>
+                {% if booking.status == 'Confirmed' %}
+                <form method="POST" action="{% url 'admin_cancel_booking' booking.id %}" style="display:inline;">
+                  {% csrf_token %}
+                  <button class="btn-cancel" type="submit" onclick="return confirm('Cancel booking #{{ booking.id|stringformat:'05d' }}?')">Cancel</button>
+                </form>
+                {% endif %}
+                <form method="POST" action="{% url 'admin_delete_booking' booking.id %}" style="display:inline;">
+                  {% csrf_token %}
+                  <button class="btn-delete" type="submit" onclick="return confirm('Permanently delete this booking?')">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7">
+              <div class="empty">
+                <div class="empty-icon">📋</div>
+                <p>No bookings match your filters.</p>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PAGINATION -->
+  {% if bookings.has_other_pages %}
+  <div class="pagination">
+    {% if bookings.has_previous %}
+      <a href="?page={{ bookings.previous_page_number }}{% for k,v in request.GET.items %}{% if k != 'page' %}&{{ k }}={{ v }}{% endif %}{% endfor %}">← Prev</a>
+    {% endif %}
+    {% for num in bookings.paginator.page_range %}
+      {% if bookings.number == num %}
+        <span class="current">{{ num }}</span>
+      {% elif num > bookings.number|add:'-3' and num < bookings.number|add:'3' %}
+        <a href="?page={{ num }}{% for k,v in request.GET.items %}{% if k != 'page' %}&{{ k }}={{ v }}{% endif %}{% endfor %}">{{ num }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if bookings.has_next %}
+      <a href="?page={{ bookings.next_page_number }}{% for k,v in request.GET.items %}{% if k != 'page' %}&{{ k }}={{ v }}{% endif %}{% endfor %}">Next →</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+</div>
+
+<!-- DETAIL MODALS -->
+{% for booking in all_bookings %}
+<div class="modal-overlay" id="modal-{{ booking.id }}">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">Booking #{{ booking.id|stringformat:"05d" }}</div>
+      <button class="modal-close" onclick="closeModal({{ booking.id }})">✕</button>
+    </div>
+
+    <div class="modal-section">
+      <h4>Visitor Info</h4>
+      <div class="info-grid">
+        <div class="info-item"><div class="il">Name</div><div class="iv">{{ booking.visitor.name }}</div></div>
+        <div class="info-item"><div class="il">Username</div><div class="iv">{{ booking.visitor.username }}</div></div>
+        <div class="info-item"><div class="il">Email</div><div class="iv">{{ booking.visitor.email }}</div></div>
+        <div class="info-item"><div class="il">Phone</div><div class="iv">{{ booking.visitor.phone }}</div></div>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <h4>Booking Info</h4>
+      <div class="info-grid">
+        <div class="info-item"><div class="il">Booking Date</div><div class="iv">{{ booking.booking_date|date:"d M Y" }}</div></div>
+        <div class="info-item"><div class="il">Visit Date</div><div class="iv">{{ booking.visit_date|date:"d M Y"|default:"Not set" }}</div></div>
+        <div class="info-item"><div class="il">Status</div>
+          <div class="iv">
+            <span class="badge {% if booking.status == 'Confirmed' %}confirmed{% else %}cancelled{% endif %}">{{ booking.status }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <h4>Rides Booked</h4>
+      <table class="rides-table">
+        <thead>
+          <tr>
+            <th>Ride</th>
+            <th>Zone</th>
+            <th>Qty</th>
+            <th>Unit Price</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in booking.items.all %}
+          <tr>
+            <td>{{ item.ride.name }}</td>
+            <td style="color:var(--muted);font-size:.78rem;">{{ item.ride.zone.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>₹{{ item.ride.ticket_price }}</td>
+            <td><strong>₹{{ item.total_price }}</strong></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="total-row">
+        <span class="tl">Total Amount</span>
+        <span class="tv">₹{{ booking.total_amount }}</span>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <h4>Change Status</h4>
+      <form method="POST" action="{% url 'admin_update_status' booking.id %}" class="modal-status">
+        {% csrf_token %}
+        <select name="status">
+          <option value="Confirmed" {% if booking.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+          <option value="Cancelled" {% if booking.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+        </select>
+        <button class="btn-save" type="submit">Save</button>
+      </form>
+    </div>
+
+  </div>
+</div>
+{% endfor %}
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">Mystic<span>World</span></div>
+    <span>Admin Panel · © 2024 MysticWorld</span>
+  </div>
+</footer>
+
+<script>
+function openModal(id){
+  document.getElementById('modal-'+id).classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(id){
+  document.getElementById('modal-'+id).classList.remove('open');
+  document.body.style.overflow='';
+}
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click',()=>{
+    el.classList.remove('open');
+    document.body.style.overflow='';
+  });
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    document.querySelectorAll('.modal-overlay.open').forEach(el=>{
+      el.classList.remove('open');
+      document.body.style.overflow='';
+    });
+  }
+});
+</script>
+</body>
+</html>

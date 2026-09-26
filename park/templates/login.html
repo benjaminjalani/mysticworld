@@ -1,0 +1,260 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign In — MysticWorld Theme Park</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --white:#ffffff; --off:#f8f7f4; --light:#f0ede8;
+      --border:#e2ddd6; --muted:#9a9189; --body:#3d3530;
+      --ink:#0d1b2a; --navy:#152638;
+      --amber:#e8920a; --amber-d:#c97c06;
+      --teal:#0e7c6b; --r:6px;
+      --error:#dc2626; --success:#16a34a;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--off);color:var(--body);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
+    a{text-decoration:none;color:inherit;}
+
+    /* ── HEADER ── */
+    header{background:#fff;border-bottom:1px solid var(--border);padding:0 2rem;}
+    nav{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:1280px;margin:0 auto;}
+    .logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--ink);}
+    .logo span{color:var(--amber);}
+    .nav-back{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:500;color:var(--muted);transition:color .2s;}
+    .nav-back:hover{color:var(--ink);}
+    .nav-back svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;}
+
+    /* ── LAYOUT ── */
+    .page-wrap{flex:1;display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 64px);}
+
+    /* ── LEFT PANEL ── */
+    .left-panel{
+      background:url("{% static 'images/img1.jpg' %}") center/cover no-repeat;
+      display:flex;flex-direction:column;justify-content:space-between;
+      padding:4rem 3.5rem;position:relative;overflow:hidden;
+    }
+    .left-panel::before{
+      content:'';position:absolute;inset:0;
+      background:url("{% static 'images/img1.jpg' %}") center/cover no-repeat;
+    }
+    .left-panel::after{
+      content:'';position:absolute;
+      top:0;left:0;right:0;bottom:0;
+      background:url("{% static 'images/img1.jpg' %}") center/cover no-repeat;
+      pointer-events:none;
+    }
+
+    .left-top{position:relative;z-index:1;}
+    .left-badge{
+      display:inline-flex;align-items:center;gap:.65rem;
+      background:rgba(232,146,10,.14);border:1px solid rgba(232,146,10,.3);
+      padding:.38rem 1rem;border-radius:40px;margin-bottom:2.5rem;
+    }
+    .badge-dot{width:5px;height:5px;border-radius:50%;background:var(--amber);}
+    .badge-text{font-size:.65rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.85);}
+
+    .left-heading{font-family:'Playfair Display',serif;font-size:clamp(2rem,3.5vw,3rem);font-weight:900;color:#fff;line-height:1.08;margin-bottom:1.25rem;}
+    .left-heading em{font-style:italic;color:var(--amber);}
+    .left-sub{font-size:.9rem;line-height:1.75;color:rgba(255,255,255,.55);font-weight:300;max-width:340px;}
+
+    .left-stats{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.08);border-radius:var(--r);overflow:hidden;}
+    .l-stat{padding:1.4rem 1.5rem;background:rgba(255,255,255,.03);}
+    .l-stat-n{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:#fff;line-height:1;}
+    .l-stat-l{font-size:.62rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.38);margin-top:.25rem;}
+
+    .left-bottom{position:relative;z-index:1;}
+    .left-bottom p{font-size:.75rem;color:rgba(255,255,255,.3);line-height:1.7;}
+
+    /* ── RIGHT PANEL ── */
+    .right-panel{display:flex;align-items:center;justify-content:center;padding:3rem 2rem;background:var(--off);}
+
+    .form-box{width:100%;max-width:420px;}
+
+    .form-eyebrow{font-size:.68rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:.75rem;display:flex;align-items:center;gap:.55rem;}
+    .form-eyebrow::before{content:'';display:block;width:20px;height:1.5px;background:var(--amber);}
+
+    .form-title{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--ink);line-height:1.1;margin-bottom:.6rem;}
+    .form-title em{font-style:italic;color:var(--amber);}
+    .form-desc{font-size:.85rem;color:var(--muted);margin-bottom:2rem;line-height:1.6;}
+
+    /* ALERT */
+    .alert{padding:.9rem 1.1rem;border-radius:var(--r);font-size:.82rem;font-weight:500;margin-bottom:1.5rem;display:flex;align-items:flex-start;gap:.6rem;}
+    .alert svg{width:16px;height:16px;flex-shrink:0;margin-top:1px;}
+    .alert-error{background:#fef2f2;border:1px solid #fecaca;color:var(--error);}
+    .alert-error svg{stroke:var(--error);}
+    .alert-success{background:#f0fdf4;border:1px solid #bbf7d0;color:var(--success);}
+
+    /* FORM */
+    .form-group{margin-bottom:1.25rem;}
+    label{display:block;font-size:.78rem;font-weight:600;color:var(--ink);margin-bottom:.5rem;letter-spacing:.02em;}
+    .input-wrap{position:relative;}
+    .input-icon{position:absolute;left:.95rem;top:50%;transform:translateY(-50%);pointer-events:none;}
+    .input-icon svg{width:15px;height:15px;stroke:var(--muted);fill:none;stroke-width:1.75;}
+    input[type="text"],input[type="password"],input[type="email"]{
+      width:100%;padding:.82rem 1rem .82rem 2.7rem;
+      font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;font-weight:400;
+      background:#fff;color:var(--ink);
+      border:1.5px solid var(--border);border-radius:var(--r);
+      transition:border-color .18s,box-shadow .18s;
+      outline:none;
+    }
+    input:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(232,146,10,.1);}
+    input::placeholder{color:var(--muted);}
+    input.error-field{border-color:var(--error);}
+    .field-hint{font-size:.72rem;color:var(--muted);margin-top:.4rem;}
+
+    .form-row-inline{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+    .remember-wrap{display:flex;align-items:center;gap:.5rem;cursor:pointer;}
+    .remember-wrap input[type="checkbox"]{width:15px;height:15px;accent-color:var(--amber);cursor:pointer;}
+    .remember-wrap span{font-size:.8rem;color:var(--body);}
+    .forgot-link{font-size:.8rem;color:var(--amber);font-weight:500;transition:color .18s;}
+    .forgot-link:hover{color:var(--amber-d);}
+
+    .btn-submit{
+      width:100%;padding:.9rem;
+      background:var(--amber);color:#fff;
+      font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;font-weight:600;letter-spacing:.04em;
+      border:none;border-radius:var(--r);cursor:pointer;
+      transition:background .18s,transform .15s,box-shadow .18s;
+      display:flex;align-items:center;justify-content:center;gap:.6rem;
+    }
+    .btn-submit:hover{background:var(--amber-d);transform:translateY(-1px);box-shadow:0 6px 20px rgba(232,146,10,.3);}
+    .btn-submit svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;}
+
+    .form-divider{display:flex;align-items:center;gap:1rem;margin:1.5rem 0;}
+    .form-divider::before,.form-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+    .form-divider span{font-size:.72rem;color:var(--muted);white-space:nowrap;}
+
+    .switch-link{text-align:center;font-size:.82rem;color:var(--muted);}
+    .switch-link a{color:var(--amber);font-weight:600;transition:color .18s;}
+    .switch-link a:hover{color:var(--amber-d);}
+
+    /* ── FOOTER BAR ── */
+    .page-footer{background:var(--ink);padding:.9rem 2rem;text-align:center;font-size:.7rem;color:rgba(255,255,255,.25);}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:768px){
+      .page-wrap{grid-template-columns:1fr;}
+      .left-panel{display:none;}
+      .right-panel{padding:2.5rem 1.5rem;align-items:flex-start;padding-top:3rem;}
+      .form-box{max-width:100%;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <nav>
+    <a href="{% url 'home' %}" class="logo">Mystic<span>World</span></a>
+    <a href="{% url 'home' %}" class="nav-back">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Home
+    </a>
+  </nav>
+</header>
+
+<div class="page-wrap">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="left-top">
+      <div class="left-badge">
+        <div class="badge-dot"></div>
+        <span class="badge-text">Welcome Back</span>
+      </div>
+      <h2 class="left-heading">
+        Your Next<br/><em>Adventure</em><br/>Awaits
+      </h2>
+      <p class="left-sub">Sign in to access your bookings, manage your tickets, and get the most out of your MysticWorld experience.</p>
+    </div>
+    <div class="left-stats">
+      <div class="l-stat">
+        <div class="l-stat-n">50+</div>
+        <div class="l-stat-l">Attractions</div>
+      </div>
+      <div class="l-stat">
+        <div class="l-stat-n">5</div>
+        <div class="l-stat-l">Themed Zones</div>
+      </div>
+      <div class="l-stat">
+        <div class="l-stat-n">12h</div>
+        <div class="l-stat-l">Daily Fun</div>
+      </div>
+      <div class="l-stat">
+        <div class="l-stat-n">365</div>
+        <div class="l-stat-l">Days Open</div>
+      </div>
+    </div>
+    <div class="left-bottom">
+      <p>&copy; 2024 MysticWorld Theme Park. All rights reserved.</p>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="form-box">
+
+      <div class="form-eyebrow">Sign In</div>
+      <h1 class="form-title">Welcome <em>Back</em></h1>
+      <p class="form-desc">Enter your credentials to access your account and manage your bookings.</p>
+
+      {% if error %}
+      <div class="alert alert-error">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        {{ error }}
+      </div>
+      {% endif %}
+
+      <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label for="username">Username</label>
+          <div class="input-wrap">
+            <div class="input-icon">
+              <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <input type="text" id="username" name="username" placeholder="Enter your username" autocomplete="username" required value="{{ request.POST.username|default:'' }}"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-wrap">
+            <div class="input-icon">
+              <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required/>
+          </div>
+        </div>
+
+        <br>
+
+        <button type="submit" class="btn-submit">
+          <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Sign In to My Account
+        </button>
+      </form>
+
+      <div class="form-divider"><span>New to MysticWorld?</span></div>
+
+      <div class="switch-link">
+        Don't have an account? <a href="{% url 'register' %}">Create one — it's free</a>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="page-footer">&copy; 2024 MysticWorld Theme Park · All rights reserved</div>
+
+</body>
+</html>

@@ -1,0 +1,419 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Booking Confirmed — MysticWorld</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --white:#fff; --off:#f8f7f4; --border:#e2ddd6;
+      --muted:#9a9189; --body:#3d3530; --ink:#0d1b2a;
+      --amber:#e8920a; --amber-d:#c97c06; --teal:#0e7c6b; --r:8px;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      font-family:'Plus Jakarta Sans',sans-serif;
+      background:var(--ink);
+      min-height:100vh;
+      display:flex; flex-direction:column;
+      -webkit-font-smoothing:antialiased;
+    }
+    a{text-decoration:none;color:inherit;}
+
+    /* ── BG TEXTURE ── */
+    body::before{
+      content:'';
+      position:fixed; inset:0; z-index:0;
+      background:
+        linear-gradient(145deg,#0d3a2e 0%,#152638 40%,#0d1b2a 70%,#080f18 100%);
+      pointer-events:none;
+    }
+    body::after{
+      content:'';
+      position:fixed; inset:0; z-index:0;
+      background-image:radial-gradient(circle,rgba(255,255,255,.025) 1px,transparent 1px);
+      background-size:30px 30px;
+      pointer-events:none;
+    }
+
+    /* Ambient glow */
+    .glow{
+      position:fixed; z-index:0; border-radius:50%;
+      pointer-events:none;
+    }
+    .glow-1{top:-15%;left:-10%;width:55vw;height:55vw;background:radial-gradient(circle,rgba(232,146,10,.07) 0%,transparent 65%);}
+    .glow-2{bottom:-10%;right:-5%;width:40vw;height:40vw;background:radial-gradient(circle,rgba(14,124,107,.07) 0%,transparent 65%);}
+
+    /* ── HEADER ── */
+    header{
+      position:relative;z-index:10;
+      background:rgba(0,0,0,.25);
+      backdrop-filter:blur(16px);
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    nav{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:1280px;margin:0 auto;padding:0 2.5rem;}
+    .logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:#fff;}
+    .logo span{color:var(--amber);}
+    .nav-r{display:flex;align-items:center;gap:.75rem;}
+    .nav-user{font-size:.8rem;color:rgba(255,255,255,.5);}
+    .nav-user strong{color:var(--amber);}
+    .nav-out{font-size:.75rem;color:rgba(255,255,255,.38);padding:.4rem .9rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--r);transition:all .2s;}
+    .nav-out:hover{border-color:rgba(255,255,255,.28);color:#fff;}
+
+    /* ── MAIN ── */
+    main{
+      position:relative;z-index:5;
+      flex:1;display:flex;align-items:center;justify-content:center;
+      padding:3.5rem 1.5rem;
+    }
+
+    .wrap{width:100%;max-width:700px;}
+
+    /* ── TOP SECTION ── */
+    .top-section{
+      text-align:center;
+      margin-bottom:2.5rem;
+      animation:fadeUp .55s ease both;
+    }
+
+    .check-wrap{
+      position:relative;
+      display:inline-flex;align-items:center;justify-content:center;
+      margin-bottom:1.75rem;
+    }
+    .check-ring{
+      width:80px;height:80px;border-radius:50%;
+      background:rgba(14,124,107,.15);
+      border:2px solid rgba(14,124,107,.4);
+      display:flex;align-items:center;justify-content:center;
+      animation:pop .45s .1s ease both;
+    }
+    .check-ring svg{width:34px;height:34px;stroke:#5ecfb0;fill:none;stroke-width:2;}
+    /* Orbiting dots */
+    .orbit{
+      position:absolute;inset:-12px;
+      border-radius:50%;
+      border:1px dashed rgba(14,124,107,.25);
+      animation:spin 8s linear infinite;
+    }
+    .orbit::before,.orbit::after{
+      content:'';position:absolute;
+      width:8px;height:8px;border-radius:50%;
+      background:rgba(14,124,107,.5);
+      top:50%;left:0;transform:translateY(-50%);
+    }
+    .orbit::after{left:auto;right:0;}
+    @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+    @keyframes pop{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+    .top-section h1{
+      font-family:'Playfair Display',serif;
+      font-size:clamp(2rem,4vw,2.8rem);
+      font-weight:900;color:#fff;
+      line-height:1.1;margin-bottom:.6rem;
+    }
+    .top-section h1 em{font-style:italic;color:var(--amber);}
+    .top-section p{font-size:.9rem;color:rgba(255,255,255,.45);line-height:1.75;max-width:400px;margin:0 auto;}
+
+    /* ── MAIN CARD ── */
+    .main-card{
+      background:var(--white);
+      border-radius:14px;
+      overflow:hidden;
+      box-shadow:0 40px 100px rgba(0,0,0,.5);
+      animation:fadeUp .55s .15s ease both;
+    }
+
+    /* Card header bar */
+    .card-bar{
+      background:linear-gradient(105deg,#0d3a2e 0%,#1c4d3a 55%,#152638 100%);
+      padding:2rem 2.25rem;
+      display:flex;align-items:flex-start;justify-content:space-between;
+      gap:1.5rem;
+      position:relative;overflow:hidden;
+    }
+    .card-bar::after{
+      content:'';position:absolute;
+      top:-50px;right:-50px;
+      width:200px;height:200px;border-radius:50%;
+      background:radial-gradient(circle,rgba(232,146,10,.1) 0%,transparent 65%);
+    }
+    .cb-left{}
+    .cb-park{
+      font-size:.6rem;font-weight:700;letter-spacing:.22em;
+      text-transform:uppercase;color:rgba(255,255,255,.45);
+      margin-bottom:.5rem;
+    }
+    .cb-title{
+      font-family:'Playfair Display',serif;
+      font-size:1.55rem;font-weight:900;color:#fff;
+      line-height:1.1;margin-bottom:.35rem;
+    }
+    .cb-sub{font-size:.76rem;color:rgba(255,255,255,.5);}
+    .cb-right{text-align:right;flex-shrink:0;position:relative;z-index:1;}
+    .cb-ref-lbl{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.35);}
+    .cb-ref{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--amber);margin-top:.2rem;}
+    .cb-status{
+      display:inline-flex;align-items:center;gap:.4rem;
+      background:rgba(14,124,107,.2);border:1px solid rgba(14,124,107,.4);
+      padding:.3rem .8rem;border-radius:40px;
+      font-size:.64rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+      color:#5ecfb0;margin-top:.6rem;
+    }
+    .cb-status-dot{width:5px;height:5px;border-radius:50%;background:#5ecfb0;}
+
+    /* Tear line */
+    .tear{
+      height:1px;
+      background:repeating-linear-gradient(90deg,var(--border) 0,var(--border) 8px,transparent 8px,transparent 16px);
+      position:relative;
+    }
+    .tear::before,.tear::after{
+      content:'';position:absolute;top:50%;transform:translateY(-50%);
+      width:22px;height:22px;border-radius:50%;background:var(--ink);
+    }
+    .tear::before{left:-11px;}
+    .tear::after{right:-11px;}
+
+    /* Card body */
+    .card-body{padding:2rem 2.25rem;}
+
+    /* Info grid */
+    .info-grid{
+      display:grid;grid-template-columns:repeat(3,1fr);
+      gap:1px;background:var(--border);
+      border:1px solid var(--border);border-radius:var(--r);
+      overflow:hidden;margin-bottom:1.75rem;
+    }
+    .ig{background:var(--white);padding:1.1rem 1.2rem;}
+    .ig.wide{grid-column:span 3;}
+    .ig.half{grid-column:span 2;}
+    .ig-lbl{
+      font-size:.58rem;font-weight:700;letter-spacing:.18em;
+      text-transform:uppercase;color:var(--muted);margin-bottom:.38rem;
+    }
+    .ig-val{font-size:.88rem;font-weight:600;color:var(--ink);}
+    .ig-val.amber{
+      font-family:'Playfair Display',serif;
+      font-size:1.55rem;font-weight:900;color:var(--amber);
+    }
+    .ig-val.green{color:var(--teal);}
+
+    /* Rides booked section */
+    .rides-section{margin-bottom:1.75rem;}
+    .rides-title{
+      font-size:.7rem;font-weight:700;letter-spacing:.18em;
+      text-transform:uppercase;color:var(--muted);
+      margin-bottom:.75rem;display:flex;align-items:center;gap:.6rem;
+    }
+    .rides-title::after{content:'';flex:1;height:1px;background:var(--border);}
+
+    .ride-line{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:.75rem 1rem;
+      background:var(--off);border:1px solid var(--border);
+      border-radius:var(--r);margin-bottom:.5rem;
+    }
+    .ride-line:last-child{margin-bottom:0;}
+    .rl-left{}
+    .rl-name{font-size:.88rem;font-weight:600;color:var(--ink);margin-bottom:.18rem;}
+    .rl-meta{font-size:.72rem;color:var(--muted);}
+    .rl-price{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--ink);}
+
+    /* Email row */
+    .email-row{
+      display:flex;align-items:center;gap:.75rem;
+      background:rgba(232,146,10,.06);
+      border:1px solid rgba(232,146,10,.2);
+      border-radius:var(--r);padding:1rem 1.25rem;
+      font-size:.8rem;color:var(--body);line-height:1.6;
+    }
+    .email-row svg{width:16px;height:16px;stroke:var(--amber);fill:none;stroke-width:2;flex-shrink:0;}
+
+    /* Card footer actions */
+    .card-footer{
+      padding:1.5rem 2.25rem;
+      background:var(--off);
+      border-top:1px solid var(--border);
+      display:grid;grid-template-columns:1fr 1fr;gap:.75rem;
+    }
+    .btn-home{
+      padding:.88rem;background:var(--ink);color:#fff;
+      text-align:center;font-size:.82rem;font-weight:600;
+      border-radius:var(--r);transition:background .18s;
+      display:flex;align-items:center;justify-content:center;gap:.5rem;
+    }
+    .btn-home svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2;}
+    .btn-home:hover{background:#1a2e42;}
+    .btn-again{
+      padding:.88rem;background:transparent;
+      border:1.5px solid var(--border);color:var(--body);
+      text-align:center;font-size:.82rem;font-weight:600;
+      border-radius:var(--r);transition:all .18s;
+      display:flex;align-items:center;justify-content:center;gap:.5rem;
+    }
+    .btn-again svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;}
+    .btn-again:hover{border-color:var(--amber);color:var(--amber);}
+
+    /* ── FOOTER ── */
+    footer{
+      position:relative;z-index:5;
+      background:rgba(0,0,0,.3);
+      border-top:1px solid rgba(255,255,255,.05);
+      padding:1.1rem 2rem;
+      text-align:center;
+      font-size:.68rem;color:rgba(255,255,255,.2);
+    }
+
+    @media(max-width:600px){
+      .card-bar{flex-direction:column;gap:.75rem;}
+      .cb-right{text-align:left;}
+      .info-grid{grid-template-columns:1fr 1fr;}
+      .ig.wide,.ig.half{grid-column:span 2;}
+      .card-body,.card-bar,.card-footer{padding-left:1.5rem;padding-right:1.5rem;}
+      .card-footer{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="glow glow-1"></div>
+<div class="glow glow-2"></div>
+
+<!-- HEADER -->
+<header>
+  <nav>
+    <a href="{% url 'home' %}" class="logo">Mystic<span>World</span></a>
+    <div class="nav-r">
+      {% if request.session.visitor_id %}
+        <span class="nav-user">Hi, <strong>{{ request.session.visitor_name }}</strong></span>
+        <a href="{% url 'logout' %}" class="nav-out">Sign Out</a>
+      {% endif %}
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <!-- TOP -->
+    <div class="top-section">
+      <div class="check-wrap">
+        <div class="orbit"></div>
+        <div class="check-ring">
+          <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+      </div>
+      <h1>Booking <em>Confirmed!</em></h1>
+      <p>Your reservation is complete and a full confirmation has been sent to your email address.</p>
+    </div>
+
+    <!-- MAIN CARD -->
+    <div class="main-card">
+
+      <!-- Bar -->
+      <div class="card-bar">
+        <div class="cb-left">
+          <div class="cb-park">MysticWorld Theme Park &nbsp;·&nbsp; Official Booking</div>
+          <div class="cb-title">Your Visit is Reserved</div>
+          <div class="cb-sub">{{ booking.booking_date }} &nbsp;·&nbsp; {{ booking.visitor.name }}</div>
+        </div>
+        <div class="cb-right">
+          <div class="cb-ref-lbl">Booking Reference</div>
+          <div class="cb-ref">#{{ booking.id|stringformat:"05d" }}</div>
+          <div class="cb-status">
+            <div class="cb-status-dot"></div>
+            {{ booking.status }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Tear -->
+      <div class="tear"></div>
+
+      <!-- Body -->
+      <div class="card-body">
+
+        <!-- Info grid -->
+        <div class="info-grid">
+          <div class="ig">
+            <div class="ig-lbl">Visitor Name</div>
+            <div class="ig-val">{{ booking.visitor.name }}</div>
+          </div>
+          <div class="ig">
+            <div class="ig-lbl">Username</div>
+            <div class="ig-val">{{ booking.visitor.username }}</div>
+          </div>
+          <div class="ig">
+            <div class="ig-lbl">Booking Date</div>
+            <div class="ig-val">{{ booking.booking_date }}</div>
+          </div>
+          <div class="ig">
+            <div class="ig-lbl">Email</div>
+            <div class="ig-val">{{ booking.visitor.email }}</div>
+          </div>
+          <div class="ig">
+            <div class="ig-lbl">Phone</div>
+            <div class="ig-val">{{ booking.visitor.phone }}</div>
+          </div>
+          <div class="ig">
+            <div class="ig-lbl">Status</div>
+            <div class="ig-val green">{{ booking.status }}</div>
+          </div>
+          <div class="ig wide">
+            <div class="ig-lbl">Total Amount Paid</div>
+            <div class="ig-val amber">₹{{ booking.total_amount }}</div>
+          </div>
+        </div>
+
+        <!-- Rides booked -->
+        <div class="rides-section">
+          <div class="rides-title">Rides Booked</div>
+          {% for item in booking.bookingitem_set.all %}
+          <div class="ride-line">
+            <div class="rl-left">
+              <div class="rl-name">{{ item.ride.name }}</div>
+              <div class="rl-meta">
+                {{ item.ride.zone.name }}&nbsp;&bull;&nbsp;
+                {{ item.ride.thrill_level }}&nbsp;&bull;&nbsp;
+                {{ item.quantity }} ticket{{ item.quantity|pluralize }}
+              </div>
+            </div>
+            <div class="rl-price">₹{{ item.total_price }}</div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Email notice -->
+        <div class="email-row">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Full confirmation email sent to&nbsp;<strong>{{ booking.visitor.email }}</strong>
+        </div>
+
+      </div>
+
+      <!-- Footer actions -->
+      <div class="card-footer">
+        <a href="{% url 'home' %}" class="btn-home">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          Back to Home
+        </a>
+        <a href="{% url 'booking' %}" class="btn-again">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Book Another Ride
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+</main>
+
+<footer>&copy; 2024 MysticWorld Theme Park &nbsp;·&nbsp; All rights reserved</footer>
+
+</body>
+</html>

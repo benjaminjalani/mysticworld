@@ -1,0 +1,630 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Account — MysticWorld</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --white:#fff; --off:#f8f7f4; --border:#e2ddd6; --muted:#9a9189;
+      --body:#3d3530; --ink:#0d1b2a; --amber:#e8920a; --amber-d:#c97c06;
+      --amber-lt:rgba(232,146,10,.09); --teal:#0e7c6b;
+      --red:#c0392b; --green:#0e7c6b; --r:6px;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--off);color:var(--body);min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;}
+    a{text-decoration:none;color:inherit;}
+    button{font-family:'Plus Jakarta Sans',sans-serif;}
+
+    /* ── HEADER ── */
+    header{background:var(--ink);border-bottom:1px solid rgba(255,255,255,.07);position:sticky;top:0;z-index:100;}
+    nav{display:flex;align-items:center;justify-content:space-between;height:66px;max-width:1800px;margin:0 auto;padding:0 2.5rem;}
+    .logo{font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:900;color:#fff;}
+    .logo span{color:var(--amber);}
+    .nav-links{display:flex;align-items:center;gap:2rem;list-style:none;}
+    .nav-links a{font-size:.8rem;font-weight:500;letter-spacing:.04em;color:rgba(255,255,255,.55);transition:color .2s;}
+    .nav-links a:hover{color:#fff;}
+    .nav-right{display:flex;align-items:center;gap:.75rem;}
+    .nav-book{background:var(--amber);color:#fff;padding:.52rem 1.3rem;border-radius:var(--r);font-size:.8rem;font-weight:600;transition:background .18s;}
+    .nav-book:hover{background:var(--amber-d);}
+    .nav-out{font-size:.8rem;color:rgba(255,255,255,.45);padding:.52rem .9rem;border:1px solid rgba(255,255,255,.12);border-radius:var(--r);transition:all .2s;}
+    .nav-out:hover{border-color:rgba(255,255,255,.3);color:#fff;}
+
+    /* ── HERO BANNER ── */
+    .hero-banner{
+      background:
+        linear-gradient(105deg,rgba(13,27,42,.96) 0%,rgba(13,27,42,.88) 50%,rgba(13,27,42,.7) 100%),
+        linear-gradient(135deg,#0d3a2e 0%,#1a4a3a 40%,#0d1b2a 100%);
+      padding:2.5rem 0;
+      position:relative;overflow:hidden;
+    }
+    .hero-banner::after{content:'';position:absolute;top:-60px;right:-60px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(232,146,10,.08) 0%,transparent 65%);}
+    .hb-inner{max-width:1280px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;position:relative;z-index:1;}
+
+    .hb-left{display:flex;align-items:center;gap:1.5rem;}
+    .hb-avatar{
+      width:64px;height:64px;border-radius:50%;flex-shrink:0;
+      background:linear-gradient(135deg,var(--amber),#f5c842);
+      display:flex;align-items:center;justify-content:center;
+      font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;color:var(--ink);
+      border:3px solid rgba(255,255,255,.15);
+    }
+    .hb-name{font-family:'Playfair Display',serif;font-size:1.55rem;font-weight:900;color:#fff;margin-bottom:.25rem;}
+    .hb-meta{display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap;}
+    .hb-chip{font-size:.72rem;color:rgba(255,255,255,.45);display:flex;align-items:center;gap:.38rem;}
+    .hb-chip svg{width:12px;height:12px;stroke:var(--amber);fill:none;stroke-width:2;}
+
+    .hb-stats{display:flex;gap:0;flex-shrink:0;}
+    .hb-stat{text-align:center;padding:0 1.75rem;border-right:1px solid rgba(255,255,255,.1);}
+    .hb-stat:last-child{border-right:none;padding-right:0;}
+    .hbs-n{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;color:#fff;line-height:1;}
+    .hbs-l{font-size:.62rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.38);margin-top:.22rem;}
+
+    /* ── TAB BAR ── */
+    .tab-bar{background:var(--white);border-bottom:1px solid var(--border);}
+    .tab-bar-inner{max-width:1280px;margin:0 auto;padding:0 2.5rem;display:flex;}
+    .tab{
+      padding:.95rem 1.25rem;
+      font-size:.8rem;font-weight:600;
+      color:var(--muted);border-bottom:2px solid transparent;
+      cursor:pointer;transition:all .2s;
+      background:none;border-top:none;border-left:none;border-right:none;
+      display:flex;align-items:center;gap:.5rem;
+    }
+    .tab svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;}
+    .tab:hover{color:var(--ink);}
+    .tab.active{color:var(--ink);border-bottom-color:var(--amber);}
+
+    /* ── LAYOUT ── */
+    .layout{flex:1;max-width:1280px;margin:0 auto;padding:2.5rem 2.5rem 5rem;width:100%;}
+
+    /* ── PANELS ── */
+    .panel{display:none;}
+    .panel.active{display:block;animation:panIn .25s ease;}
+    @keyframes panIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ── BLOCK ── */
+    .block{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:1.5rem;}
+    .bk-head{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+    .bk-head-l h3{font-size:.9rem;font-weight:700;color:var(--ink);}
+    .bk-head-l p{font-size:.74rem;color:var(--muted);margin-top:.1rem;}
+    .bk-body{padding:1.75rem;}
+    .bk-foot{padding:.9rem 1.75rem;background:var(--off);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:flex-end;gap:.75rem;}
+
+    /* ── PROFILE INFO ── */
+    .info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);}
+    .ig{background:var(--white);padding:1rem 1.25rem;}
+    .ig-lbl{font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
+    .ig-val{font-size:.88rem;font-weight:500;color:var(--ink);}
+
+    /* ── BOOKING CARDS ── */
+    .bk-card{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:1px;background:var(--white);transition:box-shadow .2s;}
+    .bk-card:last-child{margin-bottom:0;}
+    .bk-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.06);}
+
+    .bkc-top{padding:1.1rem 1.5rem;display:grid;grid-template-columns:auto 1fr auto;gap:1.25rem;align-items:center;border-bottom:1px solid var(--border);background:var(--off);}
+    .bkc-id{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;color:var(--ink);}
+    .bkc-date{font-size:.73rem;color:var(--muted);margin-top:.15rem;}
+    .status-pill{padding:.28rem .82rem;border-radius:40px;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
+    .sp-ok{background:rgba(14,124,107,.09);color:var(--teal);border:1px solid rgba(14,124,107,.22);}
+    .sp-no{background:rgba(192,57,43,.08);color:var(--red);border:1px solid rgba(192,57,43,.2);}
+
+    .bkc-rides{padding:.9rem 1.5rem;border-bottom:1px solid var(--border);}
+    .ride-row{display:flex;align-items:center;justify-content:space-between;padding:.55rem 0;border-bottom:1px solid var(--border);}
+    .ride-row:last-child{border-bottom:none;}
+    .rr-name{font-size:.85rem;font-weight:600;color:var(--ink);}
+    .rr-meta{font-size:.72rem;color:var(--muted);margin-top:.12rem;display:flex;align-items:center;gap:.5rem;}
+    .rr-dot{width:3px;height:3px;border-radius:50%;background:var(--muted);}
+    .rr-price{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--ink);}
+
+    .bkc-foot{padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;}
+    .bkc-total{font-size:.82rem;color:var(--body);}
+    .bkc-total strong{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:900;color:var(--amber);}
+    .bkc-actions{display:flex;gap:.55rem;}
+
+    /* ── BUTTONS ── */
+    .btn{display:inline-flex;align-items:center;gap:.45rem;padding:.55rem 1.1rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.78rem;font-weight:600;border-radius:var(--r);cursor:pointer;border:none;transition:all .18s;}
+    .btn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.5;}
+    .btn-dark{background:var(--ink);color:#fff;}
+    .btn-dark:hover{background:#1a2e42;}
+    .btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--body);}
+    .btn-ghost:hover{border-color:var(--ink);color:var(--ink);}
+    .btn-amber{background:var(--amber);color:#fff;}
+    .btn-amber:hover{background:var(--amber-d);transform:translateY(-1px);}
+    .btn-red{background:transparent;border:1.5px solid rgba(192,57,43,.3);color:var(--red);}
+    .btn-red:hover{background:rgba(192,57,43,.06);border-color:var(--red);}
+
+    /* ── TICKET ── */
+    .ticket-wrap{display:none;border-top:1px solid var(--border);padding:1.5rem;background:var(--off);}
+    .ticket-wrap.open{display:block;}
+    .ticket{background:var(--ink);border-radius:var(--r);overflow:hidden;}
+    .tk-bar{height:3px;background:linear-gradient(90deg,var(--amber),#f5c842);}
+    .tk-head{padding:1.4rem 1.75rem;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:flex-start;justify-content:space-between;}
+    .tk-park{font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:.38rem;}
+    .tk-ref{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--amber);}
+    .tk-status{font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:.26rem .72rem;border-radius:40px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.55);}
+    .tk-perf{height:1px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.1) 0,rgba(255,255,255,.1) 7px,transparent 7px,transparent 15px);margin:0;}
+    .tk-body{padding:1.4rem 1.75rem;}
+    .tk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;margin-bottom:1.25rem;}
+    .tkf-l{font-size:.55rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:.25rem;}
+    .tkf-v{font-size:.82rem;font-weight:500;color:rgba(255,255,255,.8);}
+    .tk-rides-lbl{font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:.65rem;}
+    .tk-ride-row{display:flex;justify-content:space-between;font-size:.78rem;color:rgba(255,255,255,.55);padding:.38rem 0;border-bottom:1px solid rgba(255,255,255,.05);}
+    .tk-ride-row:last-child{border-bottom:none;}
+    .tk-total-row{display:flex;justify-content:space-between;padding-top:.85rem;border-top:1px solid rgba(255,255,255,.1);margin-top:.5rem;}
+    .tk-total-lbl{font-size:.8rem;color:rgba(255,255,255,.45);font-weight:500;}
+    .tk-total-amt{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;color:var(--amber);}
+    .tk-note{font-size:.6rem;color:rgba(255,255,255,.2);text-align:center;margin-top:1rem;line-height:1.6;}
+    .btn-print{width:100%;margin-top:1rem;padding:.68rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.55);font-family:'Plus Jakarta Sans',sans-serif;font-size:.76rem;font-weight:500;border-radius:var(--r);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:all .18s;}
+    .btn-print svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;}
+    .btn-print:hover{background:rgba(255,255,255,.12);color:#fff;}
+
+    /* ── TIMINGS ── */
+    .time-top{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:1.5rem;}
+    .tc{background:var(--white);padding:1.4rem 1.5rem;position:relative;}
+    .tc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--amber),transparent);}
+    .tc-lbl{font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;}
+    .tc-val{font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:700;color:var(--ink);line-height:1;}
+    .tc-note{font-size:.72rem;color:var(--muted);margin-top:.25rem;}
+
+    .zone-tbl{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+    .zt-head{display:grid;grid-template-columns:1fr 1fr 110px;padding:.75rem 1.4rem;background:var(--off);border-bottom:1px solid var(--border);font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
+    .zt-row{display:grid;grid-template-columns:1fr 1fr 110px;padding:1rem 1.4rem;border-bottom:1px solid var(--border);align-items:center;transition:background .18s;}
+    .zt-row:last-child{border-bottom:none;}
+    .zt-row:hover{background:var(--off);}
+    .zt-zone{font-size:.86rem;font-weight:600;color:var(--ink);}
+    .zt-hrs{font-size:.82rem;color:var(--muted);}
+    .zt-badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.26rem .72rem;border-radius:40px;background:rgba(14,124,107,.09);color:var(--teal);border:1px solid rgba(14,124,107,.22);}
+    .zt-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--teal);}
+
+    /* ── FORM ── */
+    .fg{margin-bottom:1.1rem;}
+    .fg:last-child{margin-bottom:0;}
+    .f2{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;}
+    label{display:block;font-size:.75rem;font-weight:600;color:var(--ink);margin-bottom:.42rem;}
+    .iw{position:relative;}
+    .iico{position:absolute;left:.9rem;top:50%;transform:translateY(-50%);pointer-events:none;}
+    .iico svg{width:13px;height:13px;stroke:var(--muted);fill:none;stroke-width:1.75;transition:stroke .18s;}
+    input[type="text"],input[type="email"],input[type="tel"],input[type="password"]{
+      width:100%;padding:.75rem 1rem .75rem 2.5rem;
+      font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;
+      background:var(--off);color:var(--ink);
+      border:1.5px solid var(--border);border-radius:var(--r);
+      outline:none;transition:border-color .18s,background .18s;
+    }
+    input:focus{border-color:var(--amber);background:var(--white);}
+    .iw:focus-within .iico svg{stroke:var(--amber);}
+    input[readonly]{color:var(--muted);cursor:not-allowed;}
+    input::placeholder{color:var(--muted);}
+
+    /* ── ALERTS ── */
+    .alert{padding:.8rem 1rem;border-radius:var(--r);font-size:.8rem;font-weight:500;margin-bottom:1.25rem;display:flex;align-items:center;gap:.6rem;}
+    .alert svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;}
+    .alert-ok{background:rgba(14,124,107,.07);border:1px solid rgba(14,124,107,.22);color:var(--teal);}
+    .alert-err{background:rgba(192,57,43,.07);border:1px solid rgba(192,57,43,.2);color:var(--red);}
+
+    /* ── EMPTY ── */
+    .empty{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:4rem 2rem;text-align:center;}
+    .empty-ico{width:52px;height:52px;border-radius:50%;background:var(--amber-lt);border:1px solid rgba(232,146,10,.22);display:flex;align-items:center;justify-content:center;margin:0 auto 1.1rem;}
+    .empty-ico svg{width:20px;height:20px;stroke:var(--amber);fill:none;stroke-width:1.75;}
+    .empty h3{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--ink);margin-bottom:.4rem;}
+    .empty p{font-size:.82rem;color:var(--muted);line-height:1.7;max-width:240px;margin:0 auto 1.4rem;}
+
+    /* ── MODAL ── */
+    .overlay{position:fixed;inset:0;background:rgba(13,27,42,.55);backdrop-filter:blur(4px);z-index:500;display:none;align-items:center;justify-content:center;padding:1rem;}
+    .overlay.show{display:flex;}
+    .modal{background:var(--white);border-radius:var(--r);padding:2rem;max-width:380px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.2);}
+    .modal-ico{width:44px;height:44px;border-radius:50%;background:rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.2);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;}
+    .modal-ico svg{width:18px;height:18px;stroke:var(--red);fill:none;stroke-width:2;}
+    .modal h3{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:.4rem;}
+    .modal p{font-size:.82rem;color:var(--muted);line-height:1.7;margin-bottom:1.4rem;}
+    .modal-btns{display:flex;gap:.65rem;}
+    .btn-keep{flex:1;padding:.72rem;background:var(--off);border:1.5px solid var(--border);color:var(--body);font-size:.8rem;font-weight:600;border-radius:var(--r);cursor:pointer;transition:all .18s;}
+    .btn-keep:hover{border-color:var(--ink);color:var(--ink);}
+    .btn-do-cancel{flex:1;padding:.72rem;background:var(--red);color:#fff;border:none;font-size:.8rem;font-weight:600;border-radius:var(--r);cursor:pointer;transition:background .18s;}
+    .btn-do-cancel:hover{background:#a93226;}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:860px){
+      .hb-stats{display:none;}
+      .layout{padding:2rem 1.5rem 4rem;}
+      .f2{grid-template-columns:1fr;}
+      .tk-grid{grid-template-columns:1fr 1fr;}
+      .time-top{grid-template-columns:1fr 1fr;}
+      .tab-bar-inner{overflow-x:auto;white-space:nowrap;}
+    }
+    @media(max-width:560px){
+      .bkc-top{grid-template-columns:1fr auto;}
+      .hb-left{gap:1rem;}
+      .hb-avatar{width:50px;height:50px;font-size:1.2rem;}
+    }
+    @media print{
+      header,.tab-bar,.bkc-actions,.bkc-foot{display:none!important;}
+      .ticket-wrap{display:block!important;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- CANCEL MODAL -->
+<div class="overlay" id="cancelOverlay">
+  <div class="modal">
+    <div class="modal-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
+    <h3>Cancel this booking?</h3>
+    <p>This action cannot be undone. The booking will be marked as cancelled and all tickets become invalid at the gate.</p>
+    <div class="modal-btns">
+      <button class="btn-keep" onclick="closeModal()">Keep Booking</button>
+      <form method="POST" action="{% url 'cancel_booking' %}" style="flex:1;display:flex;">
+        {% csrf_token %}
+        <input type="hidden" name="booking_id" id="cancelId"/>
+        <button type="submit" class="btn-do-cancel" style="width:100%;">Yes, Cancel</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <nav>
+    <a href="{% url 'home' %}" class="logo">Mystic<span>World</span></a>
+    <ul class="nav-links">
+      <li><a href="{% url 'home' %}#zones">Zones</a></li>
+      <li><a href="{% url 'home' %}#rides">Rides</a></li>
+      <li><a href="{% url 'home' %}#tickets">Tickets</a></li>
+    </ul>
+    <div class="nav-right">
+      <a href="{% url 'booking' %}" class="nav-book">+ Book Tickets</a>
+      <a href="{% url 'logout' %}" class="nav-out">Sign Out</a>
+    </div>
+  </nav>
+</header>
+
+<!-- HERO BANNER -->
+<div class="hero-banner">
+  <div class="hb-inner">
+    <div class="hb-left">
+      <div class="hb-avatar">{{ visitor.name|slice:":1"|upper }}</div>
+      <div>
+        <div class="hb-name">{{ visitor.name }}</div>
+        <div class="hb-meta">
+          <span class="hb-chip">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+            @{{ visitor.username }}
+          </span>
+          <span class="hb-chip">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            {{ visitor.email }}
+          </span>
+          <span class="hb-chip">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07"/></svg>
+            {{ visitor.phone }}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="hb-stats">
+      <div class="hb-stat">
+        <div class="hbs-n">{{ total_bookings }}</div>
+        <div class="hbs-l">Bookings</div>
+      </div>
+      <div class="hb-stat">
+        <div class="hbs-n">{{ total_rides }}</div>
+        <div class="hbs-l">Rides Booked</div>
+      </div>
+      <div class="hb-stat">
+        <div class="hbs-n">₹{{ total_spent }}</div>
+        <div class="hbs-l">Total Spent</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <div class="tab-bar-inner">
+    <button class="tab active" id="tab-bookings" onclick="go('bookings',this)">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      My Bookings
+    </button>
+    <button class="tab" onclick="go('timings',this)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Park Timings
+    </button>
+    <button class="tab" onclick="go('profile',this)">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Edit Profile
+    </button>
+    <button class="tab" onclick="go('security',this)">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Security
+    </button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="layout">
+
+  <!-- ═══ BOOKINGS ═══ -->
+  <div class="panel active" id="pan-bookings">
+
+    {% if bookings %}
+    <div class="block">
+      <div class="bk-head">
+        <div class="bk-head-l">
+          <h3>My Bookings</h3>
+          <p>{{ total_bookings }} reservation{{ total_bookings|pluralize }} · ₹{{ total_spent }} total</p>
+        </div>
+        <a href="{% url 'booking' %}" class="btn btn-amber">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Booking
+        </a>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:0;">
+        {% for b in bookings %}
+        <div class="bk-card">
+
+          <div class="bkc-top">
+            <div>
+              <div class="bkc-id">#{{ b.id|stringformat:"05d" }}</div>
+              <div class="bkc-date">Booked on {{ b.booking_date }}</div>
+            </div>
+            <div></div>
+            <span class="status-pill {% if b.status == 'Confirmed' %}sp-ok{% else %}sp-no{% endif %}">
+              {{ b.status }}
+            </span>
+          </div>
+
+          <div class="bkc-rides">
+            {% for item in b.bookingitem_set.all %}
+            <div class="ride-row">
+              <div>
+                <div class="rr-name">{{ item.ride.name }}</div>
+                <div class="rr-meta">
+                  {{ item.ride.zone.name }}
+                  <span class="rr-dot"></span>
+                  {{ item.ride.thrill_level }}
+                  <span class="rr-dot"></span>
+                  {{ item.quantity }} ticket{{ item.quantity|pluralize }}
+                </div>
+              </div>
+              <div class="rr-price">₹{{ item.total_price }}</div>
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="bkc-foot">
+            <div class="bkc-total">Total &nbsp;<strong>₹{{ b.total_amount }}</strong></div>
+            <div class="bkc-actions">
+              <button class="btn btn-ghost" onclick="toggleTicket({{ b.id }},this)">
+                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                View Ticket
+              </button>
+              {% if b.status == 'Confirmed' %}
+              <button class="btn btn-red" onclick="openModal({{ b.id }})">
+                <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Cancel
+              </button>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Inline Ticket -->
+          <div class="ticket-wrap" id="te-{{ b.id }}">
+            <div class="ticket">
+              <div class="tk-bar"></div>
+              <div class="tk-head">
+                <div>
+                  <div class="tk-park">MysticWorld Theme Park · Official Booking Ticket</div>
+                  <div class="tk-ref">#{{ b.id|stringformat:"05d" }}</div>
+                </div>
+                <div class="tk-status">{{ b.status }}</div>
+              </div>
+              <div class="tk-perf"></div>
+              <div class="tk-body">
+                <div class="tk-grid">
+                  <div><div class="tkf-l">Visitor Name</div><div class="tkf-v">{{ visitor.name }}</div></div>
+                  <div><div class="tkf-l">Username</div><div class="tkf-v">{{ visitor.username }}</div></div>
+                  <div><div class="tkf-l">Booking Date</div><div class="tkf-v">{{ b.booking_date }}</div></div>
+                  <div><div class="tkf-l">Email</div><div class="tkf-v">{{ visitor.email }}</div></div>
+                  <div><div class="tkf-l">Phone</div><div class="tkf-v">{{ visitor.phone }}</div></div>
+                  <div><div class="tkf-l">Total Paid</div><div class="tkf-v" style="color:var(--amber);font-weight:700;">₹{{ b.total_amount }}</div></div>
+                </div>
+                <div class="tk-rides-lbl">Rides Included</div>
+                {% for item in b.bookingitem_set.all %}
+                <div class="tk-ride-row">
+                  <span>{{ item.ride.name }} · {{ item.ride.zone.name }} · ×{{ item.quantity }}</span>
+                  <span>₹{{ item.total_price }}</span>
+                </div>
+                {% endfor %}
+                <div class="tk-total-row">
+                  <span class="tk-total-lbl">Total Amount</span>
+                  <span class="tk-total-amt">₹{{ b.total_amount }}</span>
+                </div>
+                <div class="tk-note">
+                  Present this ticket at the park entrance · Open Daily 9 AM – 9 PM<br>
+                  Fantasy Boulevard, Entertainment City · +91 98765 43210
+                </div>
+                <button class="btn-print" onclick="window.print()">
+                  <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                  Print / Download Ticket
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% else %}
+    <div class="empty">
+      <div class="empty-ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <h3>No bookings yet</h3>
+      <p>You haven't made any reservations. Start by exploring the park and choosing a ride.</p>
+      <a href="{% url 'booking' %}" class="btn btn-amber">Book Tickets Now</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ═══ TIMINGS ═══ -->
+  <div class="panel" id="pan-timings">
+    <div class="time-top">
+      <div class="tc">
+        <div class="tc-lbl">Park Opens</div>
+        <div class="tc-val">9:00 AM</div>
+        <div class="tc-note">Gates open daily</div>
+      </div>
+      <div class="tc">
+        <div class="tc-lbl">Park Closes</div>
+        <div class="tc-val">9:00 PM</div>
+        <div class="tc-note">Last entry at 8:00 PM</div>
+      </div>
+      <div class="tc">
+        <div class="tc-lbl">Open</div>
+        <div class="tc-val">365 Days</div>
+        <div class="tc-note">Including all holidays</div>
+      </div>
+    </div>
+    <div class="zone-tbl">
+      <div class="zt-head"><span>Zone</span><span>Operating Hours</span><span>Status</span></div>
+      <div class="zt-row"><div class="zt-zone">🏰 Mystic Castle</div><div class="zt-hrs">9:00 AM – 9:00 PM</div><span class="zt-badge">Open</span></div>
+      <div class="zt-row"><div class="zt-zone">💥 Thrill Valley</div><div class="zt-hrs">9:30 AM – 8:30 PM</div><span class="zt-badge">Open</span></div>
+      <div class="zt-row"><div class="zt-zone">🌊 Aqua Realm</div><div class="zt-hrs">10:00 AM – 7:00 PM</div><span class="zt-badge">Open</span></div>
+      <div class="zt-row"><div class="zt-zone">🎈 Kidtopia</div><div class="zt-hrs">9:00 AM – 8:00 PM</div><span class="zt-badge">Open</span></div>
+      <div class="zt-row"><div class="zt-zone">🌲 Adventure Woods</div><div class="zt-hrs">9:00 AM – 7:30 PM</div><span class="zt-badge">Open</span></div>
+    </div>
+  </div>
+
+  <!-- ═══ EDIT PROFILE ═══ -->
+  <div class="panel" id="pan-profile">
+    {% if profile_success %}
+    <div class="alert alert-ok"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Profile updated successfully.</div>
+    {% endif %}
+    <div class="block">
+      <div class="bk-head">
+        <div class="bk-head-l"><h3>Personal Information</h3><p>Update your name, email and phone number</p></div>
+      </div>
+      <form method="POST" action="{% url 'update_profile' %}">
+        {% csrf_token %}
+        <div class="bk-body">
+          <div class="fg">
+            <label for="u_name">Full Name</label>
+            <div class="iw">
+              <div class="iico"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+              <input type="text" id="u_name" name="name" value="{{ visitor.name }}" required/>
+            </div>
+          </div>
+          <div class="fg">
+            <label>Username <span style="font-size:.68rem;color:var(--muted);font-weight:400;">(cannot be changed)</span></label>
+            <div class="iw">
+              <div class="iico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg></div>
+              <input type="text" value="{{ visitor.username }}" readonly/>
+            </div>
+          </div>
+          <div class="f2">
+            <div class="fg">
+              <label for="u_email">Email Address</label>
+              <div class="iw">
+                <div class="iico"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                <input type="email" id="u_email" name="email" value="{{ visitor.email }}" required/>
+              </div>
+            </div>
+            <div class="fg">
+              <label for="u_phone">Phone Number</label>
+              <div class="iw">
+                <div class="iico"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07"/></svg></div>
+                <input type="tel" id="u_phone" name="phone" value="{{ visitor.phone }}" required/>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bk-foot">
+          <button type="submit" class="btn btn-dark">
+            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══ SECURITY ═══ -->
+  <div class="panel" id="pan-security">
+    {% if pw_success %}<div class="alert alert-ok"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Password updated successfully.</div>{% endif %}
+    {% if pw_error %}<div class="alert alert-err"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg>{{ pw_error }}</div>{% endif %}
+    <div class="block">
+      <div class="bk-head">
+        <div class="bk-head-l"><h3>Change Password</h3><p>Minimum 8 characters recommended</p></div>
+      </div>
+      <form method="POST" action="{% url 'change_password' %}">
+        {% csrf_token %}
+        <div class="bk-body">
+          <div class="fg">
+            <label for="cur_pw">Current Password</label>
+            <div class="iw">
+              <div class="iico"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+              <input type="password" id="cur_pw" name="current_password" placeholder="Enter your current password" required/>
+            </div>
+          </div>
+          <div class="f2">
+            <div class="fg">
+              <label for="new_pw">New Password</label>
+              <div class="iw">
+                <div class="iico"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                <input type="password" id="new_pw" name="new_password" placeholder="New password" required/>
+              </div>
+            </div>
+            <div class="fg">
+              <label for="conf_pw">Confirm New Password</label>
+              <div class="iw">
+                <div class="iico"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                <input type="password" id="conf_pw" name="confirm_password" placeholder="Confirm new password" required/>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bk-foot">
+          <button type="submit" class="btn btn-dark">
+            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Update Password
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function go(name, btn) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('pan-' + name).classList.add('active');
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function toggleTicket(id, btn) {
+    const el = document.getElementById('te-' + id);
+    el.classList.toggle('open');
+    const open = el.classList.contains('open');
+    btn.innerHTML = open
+      ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Hide`
+      : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> View Ticket`;
+  }
+  function openModal(id) {
+    document.getElementById('cancelId').value = id;
+    document.getElementById('cancelOverlay').classList.add('show');
+  }
+  function closeModal() {
+    document.getElementById('cancelOverlay').classList.remove('show');
+  }
+</script>
+
+</body>
+</html>

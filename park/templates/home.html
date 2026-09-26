@@ -1,0 +1,610 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MysticWorld Theme Park — Book Tickets Online</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --white:#ffffff; --off:#f8f7f4; --light:#f0ede8;
+      --border:#e2ddd6; --muted:#9a9189; --body:#3d3530;
+      --ink:#0d1b2a; --navy:#152638;
+      --amber:#e8920a; --amber-d:#c97c06;
+      --teal:#0e7c6b; --r:6px;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--white);color:var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+    a{text-decoration:none;color:inherit;}
+    .container{max-width:1500px;margin:0 auto;padding:0 2rem;}
+    .eyebrow{font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);}
+    .display{font-family:'Playfair Display',serif;line-height:1.08;}
+
+    /* BUTTONS */
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 1.9rem;font-size:.82rem;font-weight:600;letter-spacing:.04em;border-radius:var(--r);transition:all .18s;cursor:pointer;border:none;}
+    .btn-amber{background:var(--amber);color:#fff;}
+    .btn-amber:hover{background:var(--amber-d);transform:translateY(-1px);box-shadow:0 6px 20px rgba(232,146,10,.35);}
+    .btn-outline{background:transparent;border:1.5px solid var(--ink);color:var(--ink);}
+    .btn-outline:hover{background:var(--ink);color:#fff;}
+    .btn-white-outline{background:transparent;border:1.5px solid rgba(255,255,255,.55);color:#fff;}
+    .btn-white-outline:hover{background:rgba(255,255,255,.1);border-color:#fff;}
+
+    /* HEADER */
+    #header{position:fixed;top:0;left:0;right:0;z-index:900;transition:all .3s;}
+    #header.scrolled{background:#fff;box-shadow:0 1px 0 var(--border);}
+    #header.hero-top{background:transparent;}
+    nav{display:flex;align-items:center;justify-content:space-between;height:68px;max-width:1800px;margin:0 auto;padding:0 2rem;}
+    .logo{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:#fff;letter-spacing:-.01em;transition:color .3s;}
+    #header.scrolled .logo{color:var(--ink);}
+    .logo span{color:var(--amber);}
+    .nav-center{display:flex;align-items:center;gap:2rem;list-style:none;}
+    .nav-center a{font-size:.8rem;font-weight:500;letter-spacing:.05em;color:rgba(255,255,255,.82);transition:color .2s;}
+    .nav-center a:hover{color:#fff;}
+    #header.scrolled .nav-center a{color:var(--body);}
+    #header.scrolled .nav-center a:hover{color:var(--ink);}
+    .nav-right{display:flex;align-items:center;gap:.75rem;}
+    .nav-signin{font-size:.8rem;font-weight:500;color:rgba(255,255,255,.75);padding:.5rem .9rem;transition:color .2s;}
+    #header.scrolled .nav-signin{color:var(--body);}
+    .nav-book{background:var(--amber);color:#fff;padding:.55rem 1.3rem;border-radius:var(--r);font-size:.8rem;font-weight:600;transition:background .18s;}
+    .nav-book:hover{background:var(--amber-d);}
+    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;}
+    .hamburger span{display:block;width:22px;height:1.5px;background:#fff;transition:.3s;}
+    #header.scrolled .hamburger span{background:var(--ink);}
+
+    /* HERO */
+    #hero{position:relative;height:100vh;min-height:620px;display:flex;align-items:center;overflow:hidden;}
+    .hero-bg{position:absolute;inset:0;
+      background:linear-gradient(105deg,rgba(13,27,42,.9) 0%,rgba(13,27,42,.6) 48%,rgba(13,27,42,.18) 100%),
+      linear-gradient(135deg,#0d3a2e 0%,#1a4a3a 22%,#2d5a20 48%,#1a3a50 72%,#0d1b2a 100%);}
+    .hero-bg::after{content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse at 70% 50%, rgba(45,90,32,.25) 0%, transparent 65%);
+       background:url("{% static 'images/img1.jpg' %}") center/cover no-repeat;
+      pointer-events:none;}
+    .hero-lines{position:absolute;right:0;top:0;bottom:0;width:45%;opacity:.07;pointer-events:none;}
+    .hero-lines svg{width:100%;height:100%;}
+
+    .hero-content{position:relative;z-index:2;padding:0 2rem;max-width:1280px;margin:0 auto;width:100%;}
+    .hero-badge{display:inline-flex;align-items:center;gap:.75rem;
+      background:rgba(232,146,10,.14);border:1px solid rgba(232,146,10,.38);
+      padding:.38rem 1rem;border-radius:40px;margin-bottom:2rem;
+      opacity:0;animation:up .65s .1s both;}
+    .h-dot{width:6px;height:6px;border-radius:50%;background:var(--amber);}
+    .hero-badge span{font-size:.68rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.9);}
+    .hero-h1{font-size:clamp(3.2rem,7vw,6.4rem);color:#fff;margin-bottom:1.5rem;max-width:680px;opacity:0;animation:up .65s .24s both;}
+    .hero-h1 em{font-style:italic;color:var(--amber);}
+    .hero-sub{font-size:1rem;font-weight:300;color:rgba(255,255,255,.72);max-width:410px;line-height:1.78;margin-bottom:2.5rem;opacity:0;animation:up .65s .38s both;}
+    .hero-btns{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:0;opacity:0;animation:up .65s .52s both;}
+
+    .hero-strip{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.28);backdrop-filter:blur(8px);border-top:1px solid rgba(255,255,255,.08);z-index:3;}
+    .hero-strip-inner{display:flex;max-width:1280px;margin:0 auto;padding:0 2rem;opacity:0;animation:up .65s .66s both;}
+    .h-stat{flex:1;padding:1.3rem 0;text-align:center;border-right:1px solid rgba(255,255,255,.08);}
+    .h-stat:last-child{border-right:none;}
+    .h-stat-n{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:900;color:#fff;line-height:1;}
+    .h-stat-l{font-size:.65rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:.28rem;}
+    @keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+    /* MARQUEE */
+    .mq-bar{background:var(--ink);padding:.65rem 0;overflow:hidden;}
+    .mq-track{display:flex;gap:2.5rem;animation:ticker 26s linear infinite;white-space:nowrap;}
+    .mq-item{font-size:.67rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.45);flex-shrink:0;}
+    .mq-dot{color:var(--amber);}
+    @keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+    /* ABOUT */
+    #about{padding:7rem 0;background:var(--off);}
+    .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center;}
+    .about-img-wrap{position:relative;}
+    .about-img{width:100%;aspect-ratio:3/4;border-radius:var(--r);overflow:hidden;position:relative;
+      background:url("{% static 'images/img3.jpg' %}") center/cover no-repeat;}
+    .about-img::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(13,27,42,.55));}
+    .about-img-cap{position:absolute;bottom:1.75rem;left:1.75rem;right:1.75rem;color:#fff;}
+    .about-img-cap h3{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;}
+    .about-img-cap p{font-size:.76rem;color:rgba(255,255,255,.68);margin-top:.28rem;}
+    .about-badge-card{position:absolute;top:2rem;right:-1.5rem;background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:1.2rem 1.4rem;box-shadow:0 8px 32px rgba(0,0,0,.09);text-align:center;min-width:125px;}
+    .abc-num{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:var(--ink);line-height:1;}
+    .abc-lbl{font-size:.62rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:.28rem;}
+    .abc-bar{width:22px;height:2px;background:var(--amber);margin:.45rem auto 0;}
+
+    .about-text .eyebrow{margin-bottom:.9rem;display:block;}
+    .about-text h2{font-size:clamp(2rem,3vw,2.8rem);color:var(--ink);margin-bottom:1.2rem;}
+    .about-text h2 em{font-style:italic;color:var(--amber);}
+    .about-text p{font-size:.9rem;line-height:1.82;color:var(--muted);margin-bottom:.85rem;}
+    .pillars{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin:2rem 0;border:1px solid var(--border);}
+    .pillar{padding:1.2rem;border:1px solid var(--border);transition:background .18s;}
+    .pillar:hover{background:var(--off);}
+    .p-icon{width:32px;height:32px;border-radius:50%;background:rgba(232,146,10,.09);border:1px solid rgba(232,146,10,.28);display:flex;align-items:center;justify-content:center;margin-bottom:.7rem;}
+    .p-icon svg{width:13px;height:13px;stroke:var(--amber);fill:none;stroke-width:2;}
+    .p-title{font-size:.8rem;font-weight:600;color:var(--ink);margin-bottom:.22rem;}
+    .p-desc{font-size:.73rem;line-height:1.55;color:var(--muted);}
+
+    /* ZONES */
+    #zones{padding:7rem 0;background:var(--off);}
+    .sec-row{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:3rem;}
+    .sec-row h2{font-size:clamp(2rem,3.2vw,2.8rem);color:var(--ink);margin-top:.75rem;}
+    .sec-row h2 em{font-style:italic;color:var(--amber);}
+
+    .zones-grid{display:grid;grid-template-columns:1.45fr 1fr 1fr;grid-template-rows:310px 310px;gap:3px;}
+    .z-card{position:relative;overflow:hidden;border-radius:2px;cursor:pointer;}
+    .z-card:nth-child(1){grid-row:span 2;}
+    .z-fill{position:absolute;inset:0;transition:transform .55s cubic-bezier(.4,0,.2,1);}
+    .z-card:hover .z-fill{transform:scale(1.05);}
+    .zf1{background:url("{% static 'images/castle.jpg' %}") center/cover no-repeat;}
+    .zf2{background:url("{% static 'images/thrill.jpg' %}") center/cover no-repeat;}
+    .zf3{background:url("{% static 'images/imgwater1.jpg' %}") center/cover no-repeat;}
+    .zf4{background:url("{% static 'images/kids.jpg' %}") center/cover no-repeat;}
+    .zf5{background:url("{% static 'images/imgadvent1.jpg' %}") center/cover no-repeat;}
+    .z-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.72) 0%,rgba(0,0,0,.08) 60%);}
+    .z-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:1.75rem;}
+    .z-num{font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:900;color:rgba(255,255,255,.1);line-height:1;margin-bottom:auto;padding-top:1.5rem;}
+    .z-tag{font-size:.6rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.6);background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);padding:.22rem .65rem;border-radius:40px;margin-bottom:.6rem;display:inline-block;}
+    .z-name{font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:700;color:#fff;line-height:1.15;margin-bottom:.28rem;}
+    .z-card:nth-child(1) .z-name{font-size:2.1rem;}
+    .z-desc{font-size:.76rem;color:rgba(255,255,255,.56);line-height:1.5;margin-bottom:.9rem;}
+    .z-link{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#fff;display:inline-flex;align-items:center;gap:.4rem;opacity:0;transform:translateY(5px);transition:all .28s;}
+    .z-card:hover .z-link{opacity:1;transform:translateY(0);}
+
+    /* RIDES */
+    #rides{padding:7rem 0;background:var(--off);}
+    .rides-wrap{display:grid;grid-template-columns:320px 1fr;gap:5rem;align-items:start;}
+    .rides-side{position:sticky;top:88px;}
+    .rides-side h2{font-size:clamp(1.9rem,3vw,2.6rem);color:var(--ink);margin:1rem 0 1.2rem;}
+    .rides-side h2 em{font-style:italic;color:var(--amber);}
+    .rides-side p{font-size:.86rem;line-height:1.78;color:var(--muted);margin-bottom:1.6rem;}
+    .rides-list{display:flex;flex-direction:column;gap:1px;background:var(--border);}
+    .r-row{display:grid;grid-template-columns:56px 1fr auto;gap:1.5rem;align-items:center;padding:1.4rem 1.7rem;background:var(--white);transition:background .18s;cursor:pointer;}
+    .r-row:hover{background:var(--off);}
+    .r-idx{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:900;color:var(--border);line-height:1;}
+    .r-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:.45rem;vertical-align:middle;}
+    .rd1{background:#7c3aed;}.rd2{background:#dc2626;}.rd3{background:#2563eb;}.rd4{background:#16a34a;}.rd5{background:#d97706;}
+    .r-zone{font-size:.63rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.28rem;}
+    .r-name{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--ink);}
+    .r-blurb{font-size:.76rem;color:var(--muted);line-height:1.55;margin-top:.28rem;}
+    .r-right{display:flex;flex-direction:column;align-items:flex-end;gap:.55rem;}
+    .thrill{font-size:.6rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:.28rem .72rem;border-radius:40px;}
+    .th-e{background:#fef2f2;color:#dc2626;border:1px solid #fecaca;}
+    .th-h{background:#fff7ed;color:#ea580c;border:1px solid #fed7aa;}
+    .th-m{background:#fffbeb;color:#d97706;border:1px solid #fde68a;}
+    .th-f{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;}
+    .r-arr{width:30px;height:30px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.72rem;transition:all .18s;}
+    .r-row:hover .r-arr{border-color:var(--amber);color:var(--amber);}
+
+    /* CTA */
+    #cta{background:var(--ink);padding:5rem 0;position:relative;overflow:hidden;}
+    #cta::before{content:'';position:absolute;top:-140px;right:-140px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(232,146,10,.1) 0%,transparent 70%);}
+    .cta-wrap{display:grid;grid-template-columns:1fr auto;gap:3rem;align-items:center;position:relative;z-index:1;}
+    .cta-wrap h2{font-size:clamp(1.8rem,3vw,2.6rem);color:#fff;}
+    .cta-wrap h2 em{font-style:italic;color:var(--amber);}
+    .cta-wrap p{font-size:.88rem;color:rgba(255,255,255,.5);margin-top:.6rem;max-width:480px;line-height:1.72;}
+    .cta-btns{display:flex;flex-direction:column;gap:.7rem;align-items:flex-end;}
+
+    /* CONTACT */
+    #contact{padding:7rem 0;background:var(--off);}
+    .contact-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:5rem;align-items:start;}
+    .contact-grid h2{font-size:clamp(2rem,3.2vw,2.8rem);color:var(--ink);margin-top:.75rem;}
+    .contact-grid h2 em{font-style:italic;color:var(--amber);}
+    .contact-grid p{font-size:.88rem;line-height:1.75;color:var(--muted);max-width:360px;margin-top:.75rem;}
+    .info-rows{display:flex;flex-direction:column;gap:1px;background:var(--border);margin-top:2rem;}
+    .i-row{display:flex;gap:1.2rem;align-items:flex-start;padding:1.35rem 1.45rem;background:#fff;transition:background .18s;}
+    .i-row:hover{background:var(--off);}
+    .i-ico{width:38px;height:38px;flex-shrink:0;border-radius:var(--r);background:rgba(232,146,10,.07);border:1px solid rgba(232,146,10,.2);display:flex;align-items:center;justify-content:center;}
+    .i-ico svg{width:15px;height:15px;stroke:var(--amber);fill:none;stroke-width:1.75;}
+    .i-lbl{font-size:.63rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
+    .i-val{font-size:.88rem;color:var(--ink);margin-top:.22rem;line-height:1.5;}
+    .soc-row{display:flex;gap:.55rem;margin-top:1.6rem;}
+    .soc{width:36px;height:36px;border-radius:var(--r);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:600;color:var(--muted);transition:all .18s;}
+    .soc:hover{border-color:var(--ink);color:var(--ink);}
+    .map-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+    .map-vis{height:230px;background:linear-gradient(135deg,#c0d8c0,#ccc0a0,#a8c4cc);display:flex;align-items:center;justify-content:center;}
+    .map-pin{width:52px;height:52px;background:#fff;border-radius:50%;box-shadow:0 4px 18px rgba(0,0,0,.14);display:flex;align-items:center;justify-content:center;}
+    .map-pin svg{width:20px;height:20px;stroke:var(--amber);fill:none;stroke-width:1.75;}
+    .map-body{padding:1.45rem;}
+    .map-body h4{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--ink);margin-bottom:.38rem;}
+    .map-body p{font-size:.8rem;color:var(--muted);line-height:1.6;margin-bottom:1.2rem;}
+
+    /* FOOTER */
+    footer{background:var(--ink);color:#fff;padding:4.5rem 0 2rem;}
+    .f-grid{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3.5rem;padding-bottom:3.5rem;border-bottom:1px solid rgba(255,255,255,.07);}
+    .f-logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:#fff;display:block;margin-bottom:1rem;}
+    .f-logo span{color:var(--amber);}
+    .f-about{font-size:.8rem;color:rgba(255,255,255,.38);line-height:1.82;max-width:225px;}
+    .f-col h5{font-size:.65rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:1.2rem;}
+    .f-col ul{list-style:none;display:flex;flex-direction:column;gap:.68rem;}
+    .f-col ul a{font-size:.8rem;color:rgba(255,255,255,.45);transition:color .18s;}
+    .f-col ul a:hover{color:#fff;}
+    .f-bot{display:flex;justify-content:space-between;align-items:center;font-size:.7rem;color:rgba(255,255,255,.22);flex-wrap:wrap;gap:.75rem;}
+
+    /* REVEAL */
+    .rv{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease;}
+    .rv.in{opacity:1;transform:translateY(0);}
+    .rv1{transition-delay:.1s;}.rv2{transition-delay:.2s;}.rv3{transition-delay:.3s;}
+
+    /* RESPONSIVE */
+    @media(max-width:1024px){
+      .about-grid,.contact-grid{grid-template-columns:1fr;gap:3rem;}
+      .about-badge-card{right:0;}
+      .rides-wrap{grid-template-columns:1fr;}
+      .rides-side{position:static;}
+      .f-grid{grid-template-columns:1fr 1fr;gap:2rem;}
+      .cta-wrap{grid-template-columns:1fr;gap:2rem;}
+      .cta-btns{flex-direction:row;align-items:flex-start;}
+      .zones-grid{grid-template-columns:1fr 1fr;grid-template-rows:auto;}
+      .z-card:nth-child(1){grid-row:auto;}
+    }
+    @media(max-width:768px){
+      .nav-center,.nav-right{display:none;}
+      .nav-center.open{display:flex;flex-direction:column;position:fixed;inset:0;top:68px;background:#fff;padding:2.5rem 2rem;gap:1.5rem;z-index:800;border-top:1px solid var(--border);}
+      .nav-center.open a{font-size:1rem;color:var(--body);}
+      .hamburger{display:flex;}
+      .hero-strip-inner{flex-wrap:wrap;}
+      .h-stat{min-width:50%;}
+      .tix-top,.tix-grid{grid-template-columns:1fr;}
+      .zones-grid{grid-template-columns:1fr;}
+      #about,#zones,#tickets,#rides,#contact{padding:4.5rem 0;}
+      .f-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="header" class="hero-top">
+  <nav>
+    <a href="{% url 'home' %}" class="logo">Mystic<span>World</span></a>
+    <ul class="nav-center" id="navLinks">
+      <li><a href="#about">About</a></li>
+      <li><a href="#zones">Zones</a></li>
+      <li><a href="#rides">Rides</a></li>
+      <li><a href="#tickets">Tickets</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+   <div class="nav-right">
+      {% if request.session.visitor_id %}
+        <a href="{% url 'profile' %}" class="nav-signin">My Account</a>
+        <a href="{% url 'logout' %}" class="nav-signin">Sign Out</a>
+        <a href="{% url 'booking' %}" class="nav-book">Book Tickets</a>
+      {% else %}
+        <a href="{% url 'login' %}" class="nav-signin">Sign In</a>
+        <a href="{% url 'booking' %}" class="nav-book">Book Tickets</a>
+      {% endif %}
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-lines">
+
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <div class="h-dot"></div>
+      <span>India's Premier Theme Park Destination</span>
+    </div>
+    <h1 class="hero-h1 display">
+      Where Every<br/><em>Adventure</em><br/>Comes to Life
+    </h1>
+    <p class="hero-sub">Five uniquely themed worlds. Over 50 world-class attractions. Memories your family will carry forever.</p>
+    <div class="hero-btns">
+      <a href="{% url 'booking' %}" class="btn btn-amber">Book Tickets Now</a>
+      <a href="#zones" class="btn btn-white-outline">Explore the Park</a>
+    </div>
+  </div>
+  <div class="hero-strip">
+    <div class="hero-strip-inner">
+      <div class="h-stat"><div class="h-stat-n">50+</div><div class="h-stat-l">Attractions</div></div>
+      <div class="h-stat"><div class="h-stat-n">5</div><div class="h-stat-l">Themed Zones</div></div>
+      <div class="h-stat"><div class="h-stat-n">12h</div><div class="h-stat-l">Daily Operation</div></div>
+      <div class="h-stat"><div class="h-stat-n">All Ages</div><div class="h-stat-l">Welcome</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="mq-bar">
+  <div class="mq-track">
+    <span class="mq-item">Mystic Castle</span><span class="mq-dot">✦</span>
+    <span class="mq-item">Thrill Valley</span><span class="mq-dot">✦</span>
+    <span class="mq-item">Aqua Realm</span><span class="mq-dot">✦</span>
+    <span class="mq-item">Kidtopia</span><span class="mq-dot">✦</span>
+    <span class="mq-item">Adventure Woods</span><span class="mq-dot">✦</span>
+    <span class="mq-item">Open Daily · 9 AM – 9 PM</span><span class="mq-dot">✦</span>
+    <span class="mq-item">Online Booking Available</span><span class="mq-dot">✦</span>
+    <span class="mq-item">Mystic Castle</span><span class="mq-dot">✦</span>
+    <span class="mq-item">Thrill Valley</span><span class="mq-dot">✦</span>
+    <span class="mq-item">Aqua Realm</span><span class="mq-dot">✦</span>
+    <span class="mq-item">Kidtopia</span><span class="mq-dot">✦</span>
+    <span class="mq-item">Adventure Woods</span><span class="mq-dot">✦</span>
+    <span class="mq-item">Open Daily · 9 AM – 9 PM</span><span class="mq-dot">✦</span>
+    <span class="mq-item">Online Booking Available</span><span class="mq-dot">✦</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-img-wrap rv">
+        <div class="about-img">
+          <div class="about-img-cap">
+            <h3>The Grand Experience</h3>
+            <p>Five worlds, one destination</p>
+          </div>
+        </div>
+        <div class="about-badge-card">
+          <div class="abc-num">50+</div>
+          <div class="abc-lbl">Rides &amp; Shows</div>
+          <div class="abc-bar"></div>
+        </div>
+      </div>
+      <div class="about-text">
+        <span class="eyebrow rv">About MysticWorld</span>
+        <h2 class="display rv rv1">Built for <em>Extraordinary</em> Days Out</h2>
+        <p class="rv rv2">MysticWorld is not just a theme park — it is a carefully designed world of experiences. Each zone tells its own story, each ride is engineered to deliver something you have never felt before.</p>
+        <p class="rv rv2">Whether you are a thrill-seeker, a parent looking for family fun, or someone who simply wants an extraordinary day — MysticWorld delivers from the moment you walk through the gates.</p>
+        <div class="pillars rv rv3">
+          <div class="pillar">
+            <div class="p-icon"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+            <div class="p-title">Award-Winning Park</div>
+            <div class="p-desc">Nationally recognised for safety, design and visitor experience</div>
+          </div>
+          <div class="pillar">
+            <div class="p-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+            <div class="p-title">For Every Age</div>
+            <div class="p-desc">Zones and rides designed for toddlers through to thrill-seeking adults</div>
+          </div>
+          <div class="pillar">
+            <div class="p-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div class="p-title">Safety First</div>
+            <div class="p-desc">Every attraction inspected daily to international standards</div>
+          </div>
+          <div class="pillar">
+            <div class="p-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div class="p-title">Open All Year</div>
+            <div class="p-desc">9 AM to 9 PM every day including weekends and public holidays</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ZONES -->
+<section id="zones">
+  <div class="container">
+    <div class="sec-row rv">
+      <div>
+        <span class="eyebrow">Park Zones</span>
+        <h2 class="display">Five Worlds, <em>One Destination</em></h2>
+      </div>
+      <a href="#" class="btn btn-outline">All Zones</a>
+    </div>
+    <div class="zones-grid rv">
+      <div class="z-card">
+        <div class="z-fill zf1"></div><div class="z-overlay"></div>
+        <div class="z-content">
+          <div class="z-num">01</div>
+          <span class="z-tag">Zone 01</span>
+          <div class="z-name">Mystic Castle</div>
+          <div class="z-desc">Enchanted architecture, live entertainment and fantasy experiences for the whole family.</div>
+          <a href="{% url 'zone_rides' 3 %}" class="z-link">Explore Zone →</a>
+        </div>
+      </div>
+      <div class="z-card">
+        <div class="z-fill zf2"></div><div class="z-overlay"></div>
+        <div class="z-content">
+          <div class="z-num">02</div>
+          <span class="z-tag">Zone 02</span>
+          <div class="z-name">Thrill Valley</div>
+          <div class="z-desc">Record-breaking coasters and extreme rides.</div>
+          <a href="{% url 'zone_rides' 4 %}" class="z-link">Explore Zone →</a>
+        </div>
+      </div>
+      <div class="z-card">
+        <div class="z-fill zf3"></div><div class="z-overlay"></div>
+        <div class="z-content">
+          <div class="z-num">03</div>
+          <span class="z-tag">Zone 03</span>
+          <div class="z-name">Aqua Realm</div>
+          <div class="z-desc">Wave pools, water slides and splash zones.</div>
+          <a href="{% url 'zone_rides' 5 %}" class="z-link">Explore Zone →</a>
+        </div>
+      </div>
+      <div class="z-card">
+        <div class="z-fill zf4"></div><div class="z-overlay"></div>
+        <div class="z-content">
+          <div class="z-num">04</div>
+          <span class="z-tag">Zone 04</span>
+          <div class="z-name">Kidtopia</div>
+          <div class="z-desc">A safe, colourful world built for younger visitors.</div>
+          <a href="{% url 'zone_rides' 1 %}" class="z-link">Explore Zone →</a>
+        </div>
+      </div>
+      <div class="z-card">
+        <div class="z-fill zf5"></div><div class="z-overlay"></div>
+        <div class="z-content">
+          <div class="z-num">05</div>
+          <span class="z-tag">Zone 05</span>
+          <div class="z-name">Adventure Woods</div>
+          <div class="z-desc">Zip lines, nature trails and moderate thrills.</div>
+          <a href="{% url 'zone_rides' 2 %}" class="z-link">Explore Zone →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RIDES -->
+<section id="rides">
+  <div class="container">
+    <div class="rides-wrap">
+      <div class="rides-side">
+        <span class="eyebrow rv">Featured Attractions</span>
+        <h2 class="display rv rv1">Rides That <em>Define Us</em></h2>
+        <p class="rv rv2">From record-breaking roller coasters to gentle family cruises — every attraction is engineered to deliver something extraordinary.</p>
+        <a href="#" class="btn btn-outline rv rv3">View All 50+ Rides</a>
+      </div>
+      <div class="rides-list rv">
+        <div class="r-row">
+          <div class="r-idx">01</div>
+          <div><div class="r-zone"><span class="r-dot rd2"></span>Thrill Valley</div><div class="r-name">Dragon's Spine</div><div class="r-blurb">Five inversions, 120 km/h and a 90° first drop. The most intense coaster in South Asia.</div></div>
+          <div class="r-right"><span class="thrill th-e">Extreme</span><div class="r-arr">→</div></div>
+        </div>
+        <div class="r-row">
+          <div class="r-idx">02</div>
+          <div><div class="r-zone"><span class="r-dot rd3"></span>Aqua Realm</div><div class="r-name">Tsunami Slide</div><div class="r-blurb">A 40-metre enclosed water slide propelling riders into a full wave pool at full speed.</div></div>
+          <div class="r-right"><span class="thrill th-h">High Thrill</span><div class="r-arr">→</div></div>
+        </div>
+        <div class="r-row">
+          <div class="r-idx">03</div>
+          <div><div class="r-zone"><span class="r-dot rd2"></span>Thrill Valley</div><div class="r-name">Vortex Drop</div><div class="r-blurb">A 70-metre free-fall tower. Three full seconds of zero gravity, then a magnetic smooth stop.</div></div>
+          <div class="r-right"><span class="thrill th-e">Extreme</span><div class="r-arr">→</div></div>
+        </div>
+        <div class="r-row">
+          <div class="r-idx">04</div>
+          <div><div class="r-zone"><span class="r-dot rd5"></span>Adventure Woods</div><div class="r-name">Sky Glider</div><div class="r-blurb">Aerial zip-line offering panoramic views of the entire park from 35 metres above ground.</div></div>
+          <div class="r-right"><span class="thrill th-m">Moderate</span><div class="r-arr">→</div></div>
+        </div>
+        <div class="r-row">
+          <div class="r-idx">05</div>
+          <div><div class="r-zone"><span class="r-dot rd1"></span>Mystic Castle</div><div class="r-name">Enchanted Carousel</div><div class="r-blurb">A grand carousel with hand-carved mythical figures. The centrepiece of the park.</div></div>
+          <div class="r-right"><span class="thrill th-f">Family</span><div class="r-arr">→</div></div>
+        </div>
+        <div class="r-row">
+          <div class="r-idx">06</div>
+          <div><div class="r-zone"><span class="r-dot rd4"></span>Kidtopia</div><div class="r-name">Rainbow Express</div><div class="r-blurb">A colourful miniature train taking young guests on a full circuit of Kidtopia.</div></div>
+          <div class="r-right"><span class="thrill th-f">Family</span><div class="r-arr">→</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<section id="cta">
+  <div class="container">
+    <div class="cta-wrap">
+      <div>
+        <h2 class="display">Ready to Plan Your <em>Perfect Day Out?</em></h2>
+        <p>Book your tickets online in under 2 minutes. Skip the queue, choose your pass, and arrive ready to enjoy.</p>
+      </div>
+      <div class="cta-btns">
+        <a href="{% url 'booking' %}" class="btn btn-amber">Book Tickets Now</a>
+        <a href="{% url 'register' %}" class="btn btn-white-outline">Create Account</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div>
+        <span class="eyebrow rv">Get in Touch</span>
+        <h2 class="display rv rv1">Plan Your <em>Visit</em></h2>
+        <p class="rv rv2">We are open every day of the year. Visit us, call our team, or drop us an email and we will respond within 24 hours.</p>
+        <div class="info-rows rv rv2">
+          <div class="i-row">
+            <div class="i-ico"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><div class="i-lbl">Address</div><div class="i-val">Fantasy Boulevard, Entertainment City — 400 001</div></div>
+          </div>
+          <div class="i-row">
+            <div class="i-ico"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.1 6.1l.9-.9a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+            <div><div class="i-lbl">Phone</div><div class="i-val">+91 98765 43210</div></div>
+          </div>
+          <div class="i-row">
+            <div class="i-ico"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+            <div><div class="i-lbl">Email</div><div class="i-val">info@mysticworld.com</div></div>
+          </div>
+          <div class="i-row">
+            <div class="i-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div><div class="i-lbl">Hours</div><div class="i-val">Daily · 9:00 AM – 9:00 PM · All year round</div></div>
+          </div>
+        </div>
+        <div class="soc-row rv rv3">
+          <a href="#" class="soc">Fb</a><a href="#" class="soc">Ig</a>
+          <a href="#" class="soc">Tw</a><a href="#" class="soc">Yt</a>
+        </div>
+      </div>
+      <div class="rv rv2">
+        <div class="map-card">
+          <div class="map-vis">
+            <div class="map-pin"><img src="{% static 'images/gmap.png' %}"></div>
+          </div>
+          <div class="map-body">
+            <h4>MysticWorld Theme Park</h4>
+            <p>Fantasy Boulevard, Entertainment City. Easily accessible by road and rail with ample parking available on site.</p>
+            <a href="https://maps.app.goo.gl/WfB2snqq1vpTC72U9" target="_blank" rel="noopener" class="btn btn-amber">Get Directions</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="f-grid">
+      <div>
+        <a href="{% url 'home' %}" class="f-logo">Mystic<span>World</span></a>
+        <p class="f-about">A world-class theme park destination delivering extraordinary experiences across five uniquely themed zones. Open every day of the year.</p>
+      </div>
+      <div class="f-col">
+        <h5>The Park</h5>
+        <ul>
+          <li><a href="#about">About Us</a></li>
+          <li><a href="#zones">Park Zones</a></li>
+          <li><a href="#rides">Rides</a></li>
+          <li><a href="#tickets">Tickets</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="f-col">
+        <h5>Visitor Info</h5>
+        <ul>
+          <li><a href="#">Plan Your Visit</a></li>
+          <li><a href="#">Park Map</a></li>
+          <li><a href="#">Safety Guidelines</a></li>
+          <li><a href="#">Accessibility</a></li>
+          <li><a href="#">FAQs</a></li>
+        </ul>
+      </div>
+      <div class="f-col">
+        <h5>Account</h5>
+        <ul>
+          <li><a href="{% url 'register' %}">Create Account</a></li>
+          <li><a href="{% url 'login' %}">Sign In</a></li>
+          <li><a href="{% url 'booking' %}">Book Tickets</a></li>
+          <li><a href="/admin/">Admin Panel</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="f-bot">
+      <span>&copy; 2024 MysticWorld Theme Park. All rights reserved.</span>
+      <span>Django · Final Year Project</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const hdr = document.getElementById('header');
+  function setNav(){hdr.classList.toggle('scrolled',window.scrollY>50);hdr.classList.toggle('hero-top',window.scrollY<=50);}
+  window.addEventListener('scroll',setNav,{passive:true});setNav();
+
+  document.getElementById('hamburger').addEventListener('click',()=>{
+    document.getElementById('navLinks').classList.toggle('open');
+  });
+
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1});
+  document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

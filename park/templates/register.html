@@ -1,0 +1,282 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Account — MysticWorld Theme Park</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --white:#ffffff; --off:#f8f7f4;
+      --border:#e2ddd6; --muted:#9a9189; --body:#3d3530;
+      --ink:#0d1b2a; --amber:#e8920a; --amber-d:#c97c06;
+      --teal:#0e7c6b; --r:6px;
+      --error:#dc2626;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--off);color:var(--body);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
+    a{text-decoration:none;color:inherit;}
+
+    /* HEADER */
+    header{background:#fff;border-bottom:1px solid var(--border);}
+    nav{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:1280px;margin:0 auto;padding:0 2rem;}
+    .logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--ink);}
+    .logo span{color:var(--amber);}
+    .nav-back{display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:500;color:var(--muted);transition:color .2s;}
+    .nav-back:hover{color:var(--ink);}
+    .nav-back svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;}
+
+    /* LAYOUT */
+    .page-wrap{flex:1;display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 64px);}
+
+    /* LEFT */
+    .left-panel{
+      background:linear-gradient(145deg,#0d3a2e 0%,#1a4a3a 30%,#2d5a20 60%,#0d1b2a 100%);
+      display:flex;flex-direction:column;justify-content:space-between;
+      padding:4rem 3.5rem;position:relative;overflow:hidden;
+    }
+    .left-panel::before{
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse at 80% 20%,rgba(232,146,10,.12) 0%,transparent 60%),
+                 radial-gradient(ellipse at 20% 80%,rgba(14,124,107,.1) 0%,transparent 55%);
+    }
+    .left-top{position:relative;z-index:1;}
+    .left-badge{display:inline-flex;align-items:center;gap:.65rem;background:rgba(232,146,10,.14);border:1px solid rgba(232,146,10,.3);padding:.38rem 1rem;border-radius:40px;margin-bottom:2.5rem;}
+    .badge-dot{width:5px;height:5px;border-radius:50%;background:var(--amber);}
+    .badge-text{font-size:.65rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.85);}
+    .left-heading{font-family:'Playfair Display',serif;font-size:clamp(2rem,3.5vw,3rem);font-weight:900;color:#fff;line-height:1.08;margin-bottom:1.25rem;}
+    .left-heading em{font-style:italic;color:var(--amber);}
+    .left-sub{font-size:.9rem;line-height:1.75;color:rgba(255,255,255,.55);font-weight:300;max-width:340px;margin-bottom:2.5rem;}
+
+    .benefits{display:flex;flex-direction:column;gap:.85rem;}
+    .benefit{display:flex;align-items:flex-start;gap:.9rem;}
+    .benefit-ico{width:34px;height:34px;flex-shrink:0;background:rgba(232,146,10,.12);border:1px solid rgba(232,146,10,.25);border-radius:var(--r);display:flex;align-items:center;justify-content:center;}
+    .benefit-ico svg{width:14px;height:14px;stroke:var(--amber);fill:none;stroke-width:2;}
+    .benefit-title{font-size:.8rem;font-weight:600;color:rgba(255,255,255,.9);margin-bottom:.18rem;}
+    .benefit-desc{font-size:.73rem;color:rgba(255,255,255,.45);line-height:1.5;}
+
+    .left-bottom{position:relative;z-index:1;}
+    .left-bottom p{font-size:.75rem;color:rgba(255,255,255,.3);}
+
+    /* RIGHT */
+    .right-panel{display:flex;align-items:center;justify-content:center;padding:3rem 2rem;background:var(--off);overflow-y:auto;}
+    .form-box{width:100%;max-width:440px;}
+
+    .form-eyebrow{font-size:.68rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:.75rem;display:flex;align-items:center;gap:.55rem;}
+    .form-eyebrow::before{content:'';display:block;width:20px;height:1.5px;background:var(--amber);}
+    .form-title{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--ink);line-height:1.1;margin-bottom:.6rem;}
+    .form-title em{font-style:italic;color:var(--amber);}
+    .form-desc{font-size:.85rem;color:var(--muted);margin-bottom:2rem;line-height:1.6;}
+
+    /* Alert */
+    .alert{padding:.9rem 1.1rem;border-radius:var(--r);font-size:.82rem;font-weight:500;margin-bottom:1.5rem;display:flex;align-items:flex-start;gap:.6rem;background:#fef2f2;border:1px solid #fecaca;color:var(--error);}
+    .alert svg{width:16px;height:16px;flex-shrink:0;margin-top:1px;stroke:var(--error);fill:none;stroke-width:2;}
+
+    /* Fields */
+    .form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;}
+    .form-group{margin-bottom:1.1rem;}
+    label{display:block;font-size:.78rem;font-weight:600;color:var(--ink);margin-bottom:.45rem;}
+    .input-wrap{position:relative;}
+    .input-icon{position:absolute;left:.95rem;top:50%;transform:translateY(-50%);pointer-events:none;}
+    .input-icon svg{width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:1.75;transition:stroke .18s;}
+    input[type="text"],input[type="password"],input[type="email"]{
+      width:100%;padding:.78rem 1rem .78rem 2.6rem;
+      font-family:'Plus Jakarta Sans',sans-serif;font-size:.86rem;
+      background:#fff;color:var(--ink);
+      border:1.5px solid var(--border);border-radius:var(--r);
+      transition:border-color .18s,box-shadow .18s;outline:none;
+    }
+    input:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(232,146,10,.1);}
+    input:focus + .input-icon svg,.input-wrap:focus-within .input-icon svg{stroke:var(--amber);}
+    input::placeholder{color:var(--muted);}
+    .field-hint{font-size:.7rem;color:var(--muted);margin-top:.35rem;}
+
+    /* Password strength */
+    .pw-bars{display:flex;gap:3px;margin-top:.55rem;margin-bottom:.3rem;}
+    .pw-bar{flex:1;height:3px;border-radius:2px;background:var(--border);transition:background .25s;}
+    .pw-bar.weak{background:#dc2626;}
+    .pw-bar.fair{background:#d97706;}
+    .pw-bar.good{background:#16a34a;}
+    .pw-label{font-size:.68rem;color:var(--muted);}
+
+    /* Terms */
+    .terms-wrap{display:flex;align-items:flex-start;gap:.65rem;padding:1.1rem;background:var(--off);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;transition:border-color .18s;margin-bottom:1.1rem;}
+    .terms-wrap:hover{border-color:rgba(232,146,10,.3);}
+    .terms-wrap input[type="checkbox"]{width:15px;height:15px;flex-shrink:0;margin-top:2px;accent-color:var(--amber);cursor:pointer;padding:0;background:none;border:none;box-shadow:none;}
+    .terms-wrap label{font-size:.78rem;color:var(--body);line-height:1.6;cursor:pointer;}
+    .terms-wrap label a{color:var(--amber);font-weight:600;}
+    .terms-wrap label a:hover{text-decoration:underline;}
+
+    /* Submit */
+    .btn-submit{width:100%;padding:.9rem;background:var(--amber);color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;font-weight:600;letter-spacing:.04em;border:none;border-radius:var(--r);cursor:pointer;transition:background .18s,transform .15s,box-shadow .18s;display:flex;align-items:center;justify-content:center;gap:.6rem;}
+    .btn-submit:hover{background:var(--amber-d);transform:translateY(-1px);box-shadow:0 6px 20px rgba(232,146,10,.3);}
+    .btn-submit svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;}
+
+    .form-divider{display:flex;align-items:center;gap:1rem;margin:1.4rem 0;}
+    .form-divider::before,.form-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+    .form-divider span{font-size:.72rem;color:var(--muted);white-space:nowrap;}
+    .switch-link{text-align:center;font-size:.82rem;color:var(--muted);}
+    .switch-link a{color:var(--amber);font-weight:600;}
+    .switch-link a:hover{color:var(--amber-d);}
+
+    .page-footer{background:var(--ink);padding:.9rem 2rem;text-align:center;font-size:.7rem;color:rgba(255,255,255,.25);}
+
+    @media(max-width:768px){
+      .page-wrap{grid-template-columns:1fr;}
+      .left-panel{display:none;}
+      .right-panel{padding:2.5rem 1.5rem;}
+      .form-box{max-width:100%;}
+      .form-grid-2{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="{% url 'home' %}" class="logo">Mystic<span>World</span></a>
+    <a href="{% url 'home' %}" class="nav-back">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Home
+    </a>
+  </nav>
+</header>
+
+<div class="page-wrap">
+
+  <!-- LEFT -->
+  <div class="left-panel">
+    <div class="left-top">
+      <div class="left-badge"><div class="badge-dot"></div><span class="badge-text">Join MysticWorld</span></div>
+      <h2 class="left-heading">Start Your<br/><em>Journey</em><br/>Today</h2>
+      <p class="left-sub">Create a free account and unlock exclusive benefits, faster booking, and a personalised park experience.</p>
+      <div class="benefits">
+        <div class="benefit">
+          <div class="benefit-ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+          <div><div class="benefit-title">Easy Online Booking</div><div class="benefit-desc">Book tickets in under 2 minutes, skip the queue entirely</div></div>
+        </div>
+        <div class="benefit">
+          <div class="benefit-ico"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div><div class="benefit-title">Manage Your Bookings</div><div class="benefit-desc">View, track and download all your booking history</div></div>
+        </div>
+        <div class="benefit">
+          <div class="benefit-ico"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div><div class="benefit-title">Secure &amp; Private</div><div class="benefit-desc">Your data is protected and never shared with third parties</div></div>
+        </div>
+        <div class="benefit">
+          <div class="benefit-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div><div class="benefit-title">Free, Always</div><div class="benefit-desc">Creating an account costs nothing — ever</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="left-bottom"><p>&copy; 2024 MysticWorld Theme Park. All rights reserved.</p></div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right-panel">
+    <div class="form-box">
+
+      <div class="form-eyebrow">Create Account</div>
+      <h1 class="form-title">Join <em>MysticWorld</em></h1>
+      <p class="form-desc">Fill in your details below to create your free visitor account.</p>
+
+      {% if error %}
+      <div class="alert">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        {{ error }}
+      </div>
+      {% endif %}
+
+      <form method="POST" action="{% url 'register' %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <div class="input-wrap">
+            <div class="input-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+            <input type="text" id="name" name="name" placeholder="Your full name" required value="{{ request.POST.name|default:'' }}"/>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <div class="input-wrap">
+              <div class="input-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+              <input type="email" id="email" name="email" placeholder="you@email.com" required value="{{ request.POST.email|default:'' }}"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <div class="input-wrap">
+              <div class="input-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.1 6.1l.9-.9a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+              <input type="text" id="phone" name="phone" placeholder="+91 98765 43210" required value="{{ request.POST.phone|default:'' }}"/>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="username">Username</label>
+          <div class="input-wrap">
+            <div class="input-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32"/></svg></div>
+            <input type="text" id="username" name="username" placeholder="Choose a username" required autocomplete="username" value="{{ request.POST.username|default:'' }}"/>
+          </div>
+          <div class="field-hint">No spaces. Letters and numbers only.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-wrap">
+            <div class="input-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <input type="password" id="password" name="password" placeholder="Create a strong password" required autocomplete="new-password"/>
+          </div>
+          <div class="pw-bars">
+            <div class="pw-bar" id="b1"></div><div class="pw-bar" id="b2"></div>
+            <div class="pw-bar" id="b3"></div><div class="pw-bar" id="b4"></div>
+          </div>
+          <div class="pw-label" id="pw-lbl">Use 8+ characters for a strong password</div>
+        </div>
+
+        <div class="terms-wrap">
+          <input type="checkbox" id="terms" name="terms" required/>
+          <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a> of MysticWorld Theme Park.</label>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+          Create My Account
+        </button>
+      </form>
+
+      <div class="form-divider"><span>Already have an account?</span></div>
+      <div class="switch-link"><a href="{% url 'login' %}">Sign in instead</a></div>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="page-footer">&copy; 2024 MysticWorld Theme Park · All rights reserved</div>
+
+<script>
+  const pw = document.getElementById('password');
+  const bars = ['b1','b2','b3','b4'].map(id => document.getElementById(id));
+  const lbl = document.getElementById('pw-lbl');
+  pw.addEventListener('input', function(){
+    const v = this.value;
+    let s = 0;
+    if(v.length >= 6) s++;
+    if(v.length >= 10) s++;
+    if(/[A-Z]/.test(v) && /[0-9]/.test(v)) s++;
+    if(/[^A-Za-z0-9]/.test(v)) s++;
+    const c = ['weak','fair','fair','good'];
+    const t = ['Too short','Fair — add numbers','Good password','Strong password ✓'];
+    bars.forEach((b,i) => { b.className = 'pw-bar'; if(i < s) b.classList.add(c[s-1]); });
+    lbl.textContent = v.length === 0 ? 'Use 8+ characters for a strong password' : (t[s-1] || 'Too short');
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,589 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ ride.name }} | MysticWorld</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --white:#fff;
+  --off:#f8f7f4;
+  --border:#e2ddd6;
+  --muted:#9a9189;
+  --ink:#0d1b2a;
+  --amber:#e8920a;
+  --amber-dark:#c97c06;
+  --green:#2a9d5c;
+  --red:#dc3545;
+  --blue:#2874f0;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Plus Jakarta Sans',sans-serif;background:var(--off);color:var(--ink);}
+
+/* HEADER */
+header{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+nav{max-width:1400px;margin:auto;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;}
+.logo{font-family:'Playfair Display',serif;font-weight:900;font-size:1.5rem;}
+.logo span{color:var(--amber);}
+.nav-links{display:flex;gap:2rem;}
+.nav-links a{text-decoration:none;font-size:.85rem;color:var(--muted);}
+.nav-links a:hover{color:var(--ink);}
+
+/* BREADCRUMB */
+.breadcrumb{max-width:1400px;margin:0 auto;padding:14px 2rem 0;font-size:.8rem;color:var(--muted);}
+.breadcrumb a{color:var(--muted);text-decoration:none;}
+.breadcrumb a:hover{color:var(--ink);}
+.breadcrumb span{margin:0 6px;}
+
+/* MAIN */
+.container{max-width:1400px;margin:auto;padding:28px 2rem 60px;}
+
+/* TOP SECTION */
+.top-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:40px;align-items:start;}
+
+/* GALLERY */
+.gallery{display:flex;flex-direction:column;gap:10px;}
+.main-img-wrap{position:relative;cursor:pointer;border-radius:12px;overflow:hidden;}
+.main-img-wrap img{width:100%;height:420px;object-fit:cover;display:block;transition:transform .3s;}
+.main-img-wrap:hover img{transform:scale(1.02);}
+.img-overlay{position:absolute;inset:0;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;transition:.3s;}
+.main-img-wrap:hover .img-overlay{background:rgba(0,0,0,.18);}
+.img-overlay-icon{color:#fff;font-size:2rem;opacity:0;transition:.3s;}
+.main-img-wrap:hover .img-overlay-icon{opacity:1;}
+
+/* INFO CARD */
+.info-card{background:#fff;border-radius:12px;border:1px solid var(--border);padding:28px;}
+.title{font-family:'Playfair Display',serif;font-size:1.9rem;margin:0 0 4px;line-height:1.2;}
+.zone-badge{display:inline-block;padding:3px 10px;background:#f3ede4;border-radius:20px;font-size:.78rem;color:var(--amber-dark);margin-bottom:16px;}
+.price-row{display:flex;align-items:baseline;gap:8px;margin-bottom:16px;}
+.price{font-size:1.8rem;font-weight:600;}
+.price-label{font-size:.8rem;color:var(--muted);}
+.divider{border:none;border-top:1px solid var(--border);margin:16px 0;}
+
+/* META GRID */
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.meta-item{background:var(--off);border-radius:8px;padding:10px 14px;}
+.meta-item .meta-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
+.meta-item .meta-val{font-size:.95rem;font-weight:500;}
+
+/* THRILL BADGE */
+.thrill-low{color:#2a9d5c;background:#edf7f1;}
+.thrill-medium{color:#e8920a;background:#fef6e7;}
+.thrill-high{color:#dc3545;background:#fdeaec;}
+.thrill-extreme{color:#7d1d3f;background:#f5e3ea;}
+
+/* BUTTONS */
+.btn-primary{display:block;text-align:center;padding:13px 20px;background:var(--amber);color:#fff;text-decoration:none;border-radius:8px;font-size:.95rem;font-weight:500;transition:.2s;border:none;cursor:pointer;width:100%;}
+.btn-primary:hover{background:var(--amber-dark);}
+.btn-secondary{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;background:#fff;color:var(--ink);text-decoration:none;border-radius:8px;font-size:.85rem;border:1px solid var(--border);cursor:pointer;transition:.2s;width:100%;}
+.btn-secondary:hover{background:var(--off);}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+
+/* SHARE TOAST */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:10px 22px;border-radius:30px;font-size:.85rem;transition:.3s;opacity:0;z-index:999;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* STICKY BAR */
+.sticky-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:14px 2rem;display:flex;align-items:center;justify-content:space-between;z-index:200;transform:translateY(100%);transition:.3s;box-shadow:0 -4px 20px rgba(0,0,0,.06);}
+.sticky-bar.visible{transform:translateY(0);}
+.sticky-name{font-family:'Playfair Display',serif;font-size:1.1rem;}
+.sticky-price{font-weight:600;color:var(--amber);font-size:1.1rem;}
+.sticky-btn{padding:10px 28px;background:var(--amber);color:#fff;border:none;border-radius:8px;font-size:.9rem;cursor:pointer;text-decoration:none;transition:.2s;}
+.sticky-btn:hover{background:var(--amber-dark);}
+
+/* SECTIONS */
+.section-wrap{display:grid;grid-template-columns:2fr 1fr;gap:40px;margin-top:40px;}
+.section{margin-bottom:30px;}
+.section h3{font-size:1.05rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.desc{font-size:.9rem;line-height:1.8;color:#555;}
+
+/* HIGHLIGHTS */
+.highlights{display:flex;flex-direction:column;gap:8px;}
+.highlight-item{display:flex;align-items:center;gap:10px;font-size:.88rem;background:#fff;padding:10px 14px;border-radius:8px;border:1px solid var(--border);}
+.hi-icon{width:28px;height:28px;border-radius:50%;background:#f3ede4;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+
+/* SIDEBAR CARD */
+.sidebar-card{background:#fff;border-radius:12px;border:1px solid var(--border);padding:20px;margin-bottom:20px;}
+.sidebar-card h4{font-size:.9rem;font-weight:600;margin:0 0 12px;}
+
+/* REVIEWS */
+.reviews-section{margin-top:50px;}
+.reviews-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.reviews-header h3{font-size:1.3rem;margin:0;}
+.avg-pill{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--border);padding:6px 14px;border-radius:30px;font-size:.9rem;}
+.avg-stars{color:var(--amber);font-size:1rem;}
+
+/* RATING BARS */
+.rating-breakdown{margin-bottom:24px;}
+.rating-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:.8rem;}
+.rating-bar-track{flex:1;background:#eee;border-radius:4px;height:6px;overflow:hidden;}
+.rating-bar-fill{height:100%;background:var(--amber);border-radius:4px;}
+.rating-bar-count{color:var(--muted);min-width:20px;text-align:right;}
+
+/* REVIEW FORM */
+.review-form{background:#fff;border:1px solid var(--border);padding:20px;border-radius:10px;margin-bottom:28px;}
+.review-form h4{margin:0 0 14px;font-size:.95rem;}
+.star-input{display:flex;gap:4px;margin-bottom:14px;}
+.star-input span{font-size:28px;color:#ddd;cursor:pointer;transition:.15s;user-select:none;line-height:1;}
+.star-input span.active{color:var(--amber);}
+.star-input span:hover{transform:scale(1.15);}
+textarea{width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:7px;font-family:inherit;font-size:.88rem;resize:vertical;min-height:90px;outline:none;transition:.2s;}
+textarea:focus{border-color:var(--amber);}
+.submit-btn{margin-top:10px;padding:10px 22px;background:var(--amber);color:#fff;border:none;border-radius:7px;font-size:.88rem;cursor:pointer;transition:.2s;}
+.submit-btn:hover{background:var(--amber-dark);}
+
+/* REVIEW ITEM */
+.review-item{border-top:1px solid #eee;padding:18px 0;}
+.review-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.reviewer-info{display:flex;align-items:center;gap:10px;}
+.avatar{width:36px;height:36px;border-radius:50%;background:#f3ede4;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:600;color:var(--amber-dark);flex-shrink:0;}
+.reviewer-name{font-weight:500;font-size:.9rem;}
+.review-date{font-size:.75rem;color:var(--muted);}
+.stars{color:var(--amber);font-size:.9rem;letter-spacing:1px;}
+.review-text{font-size:.88rem;line-height:1.7;color:#444;margin:0;}
+.review-actions{display:flex;align-items:center;gap:12px;margin-top:10px;}
+.helpful-btn{display:flex;align-items:center;gap:4px;background:none;border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:.75rem;cursor:pointer;color:var(--muted);transition:.2s;}
+.helpful-btn:hover{border-color:var(--ink);color:var(--ink);}
+.helpful-btn.liked{border-color:var(--green);color:var(--green);}
+.delete-btn{background:none;color:var(--red);border:none;font-size:.75rem;cursor:pointer;padding:0;}
+.delete-btn:hover{text-decoration:underline;}
+
+/* LOGIN PROMPT */
+.login-prompt{background:#fff;border:1px dashed var(--border);border-radius:10px;padding:20px;text-align:center;margin-bottom:28px;font-size:.88rem;color:var(--muted);}
+.login-prompt a{color:var(--amber);font-weight:500;text-decoration:none;}
+
+/* SIMILAR RIDES */
+.similar-section{margin-top:50px;padding-bottom:30px;}
+.similar-section h3{font-size:1.2rem;margin-bottom:20px;}
+.similar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;}
+.similar-card{background:#fff;border-radius:10px;border:1px solid var(--border);overflow:hidden;text-decoration:none;color:var(--ink);transition:.2s;display:block;}
+.similar-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.08);}
+.similar-card img{width:100%;height:140px;object-fit:cover;display:block;}
+.similar-card-body{padding:12px 14px;}
+.similar-card-name{font-weight:500;font-size:.9rem;margin-bottom:3px;}
+.similar-card-price{font-size:.85rem;color:var(--amber);font-weight:600;}
+.similar-card-zone{font-size:.75rem;color:var(--muted);}
+
+/* LIGHTBOX */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;align-items:center;justify-content:center;}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:90vw;max-height:90vh;border-radius:8px;object-fit:contain;}
+.lightbox-close{position:absolute;top:20px;right:28px;color:#fff;font-size:2rem;cursor:pointer;background:none;border:none;line-height:1;}
+
+/* SCROLL ANIMATION */
+.fade-up{opacity:0;transform:translateY(20px);transition:.5s ease;}
+.fade-up.visible{opacity:1;transform:translateY(0);}
+
+/* FOOTER */
+footer{background:var(--ink);color:#fff;margin-top:0;padding:50px 2rem 20px;}
+.footer-grid{max-width:2000px;margin:auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;}
+.footer-logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;}
+.footer-logo span{color:var(--amber);}
+.footer-col h5{font-size:.7rem;letter-spacing:.15em;margin-bottom:10px;color:rgba(255,255,255,.5);}
+.footer-col a{display:block;font-size:.8rem;color:rgba(255,255,255,.6);margin-bottom:6px;text-decoration:none;}
+.footer-col a:hover{color:#fff;}
+.footer-bottom{text-align:center;margin-top:30px;font-size:.7rem;color:rgba(255,255,255,.3);}
+
+@media(max-width:900px){
+  .top-grid,.section-wrap{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr;}
+  .similar-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:500px){
+  .similar-grid{grid-template-columns:1fr;}
+  .meta-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <nav>
+    <div class="logo">Mystic<span>World</span></div>
+    <div class="nav-links">
+      <a href="{% url 'home' %}">Home</a>
+      <a href="{% url 'booking' %}">Booking</a>
+      <a href="{% url 'profile' %}">Profile</a>
+    </div>
+  </nav>
+</header>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <a href="{% url 'home' %}">Home</a>
+  <span>›</span>
+  <a href="{% url 'zone_rides' ride.zone.id %}">{{ ride.zone.name }}</a>
+  <span>›</span>
+  {{ ride.name }}
+</div>
+
+<!-- MAIN -->
+<div class="container">
+
+  <div class="top-grid">
+
+    <!-- GALLERY -->
+    <div class="gallery fade-up">
+      <div class="main-img-wrap" onclick="openLightbox()">
+        <img src="{{ ride.image.url }}" alt="{{ ride.name }}" id="mainImg">
+        <div class="img-overlay">
+          <div class="img-overlay-icon">⤢</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INFO CARD -->
+    <div class="info-card fade-up">
+      <div class="title">{{ ride.name }}</div>
+      <div class="zone-badge">{{ ride.zone.name }}</div>
+
+      <div class="price-row">
+        <div class="price">₹{{ ride.ticket_price }}</div>
+        <div class="price-label">per ticket</div>
+      </div>
+
+      {% if avg_rating %}
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;">
+        <span style="color:var(--amber);font-size:1rem;">
+          {% with avg_rating|floatformat:0 as stars %}
+            {% for i in "12345" %}
+              {% if forloop.counter <= stars|add:"0" %}★{% else %}☆{% endif %}
+            {% endfor %}
+          {% endwith %}
+        </span>
+        <span style="font-size:.85rem;color:var(--muted);">{{ avg_rating|floatformat:1 }} ({{ reviews|length }} review{{ reviews|length|pluralize }})</span>
+      </div>
+      {% endif %}
+
+      <hr class="divider">
+
+      <div class="meta-grid">
+        <div class="meta-item">
+          <div class="meta-label">Thrill Level</div>
+          <div class="meta-val">
+            {% if ride.thrill_level == "Low" %}
+              <span style="color:#2a9d5c;">● Low</span>
+            {% elif ride.thrill_level == "Medium" %}
+              <span style="color:#e8920a;">● Medium</span>
+            {% elif ride.thrill_level == "High" %}
+              <span style="color:#dc3545;">● High</span>
+            {% elif ride.thrill_level == "Extreme" %}
+              <span style="color:#7d1d3f;">● Extreme</span>
+            {% else %}
+              {{ ride.thrill_level }}
+            {% endif %}
+          </div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Capacity</div>
+          <div class="meta-val">{{ ride.capacity }} persons</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Zone</div>
+          <div class="meta-val">{{ ride.zone.name }}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Status</div>
+          <div class="meta-val" style="color:var(--green);">● Available</div>
+        </div>
+      </div>
+
+      <a href="{% url 'booking' %}" class="btn-primary">Book Now</a>
+
+      <div class="btn-row">
+        <button class="btn-secondary" onclick="shareRide()">
+          <span style="font-size:14px;">↗</span> Share
+        </button>
+        <button class="btn-secondary" onclick="window.history.back()">
+          <span style="font-size:14px;">←</span> Back
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CONTENT + SIDEBAR -->
+  <div class="section-wrap">
+
+    <!-- LEFT -->
+    <div>
+      <div class="section fade-up">
+        <h3>About this experience</h3>
+        <p class="desc">
+          {{ ride.description|default:"Enjoy an exciting attraction designed for all visitors seeking thrill, adventure, and unforgettable moments. This ride promises a perfect blend of excitement and safety, making it ideal for groups and families." }}
+        </p>
+      </div>
+
+      <!-- REVIEWS -->
+      <div class="reviews-section fade-up">
+
+        <div class="reviews-header">
+          <h3>Customer Reviews</h3>
+          {% if avg_rating %}
+          <div class="avg-pill">
+            <span class="avg-stars">★</span>
+            <strong>{{ avg_rating|floatformat:1 }}</strong>
+            <span style="color:var(--muted);font-size:.8rem;">/ 5</span>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- RATING BREAKDOWN -->
+        {% if reviews %}
+        <div class="rating-breakdown">
+          {% for star in "54321" %}
+          {% with star_int=star|add:"0" %}
+          <div class="rating-bar-row">
+            <span style="min-width:12px;">{{ star }}</span>
+            <span style="color:var(--amber);font-size:.8rem;">★</span>
+            <div class="rating-bar-track">
+              <div class="rating-bar-fill" style="width:{% widthratio reviews|length 100 reviews|length %}%"></div>
+            </div>
+            <span class="rating-bar-count">-</span>
+          </div>
+          {% endwith %}
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- REVIEW FORM -->
+        {% if request.session.visitor_id %}
+        <form method="POST" class="review-form">
+          {% csrf_token %}
+          <h4>Write a Review</h4>
+          <div class="star-input" id="starInput">
+            <span data-val="1">★</span>
+            <span data-val="2">★</span>
+            <span data-val="3">★</span>
+            <span data-val="4">★</span>
+            <span data-val="5">★</span>
+          </div>
+          <input type="hidden" name="rating" id="ratingValue" value="0">
+          <textarea name="comment" placeholder="Share your experience with this ride..." required></textarea>
+          <button type="submit" class="submit-btn">Submit Review</button>
+        </form>
+        {% else %}
+        <div class="login-prompt">
+          <p style="margin:0 0 6px;">Want to leave a review?</p>
+          <a href="{% url 'login' %}">Log in</a> or <a href="{% url 'register' %}">create an account</a> to share your experience.
+        </div>
+        {% endif %}
+
+        <!-- REVIEW LIST -->
+        <div class="review-list">
+          {% for review in reviews %}
+          <div class="review-item" id="review-{{ review.id }}">
+            <div class="review-head">
+              <div class="reviewer-info">
+                <div class="avatar">{{ review.visitor.name|slice:":2"|upper }}</div>
+                <div>
+                  <div class="reviewer-name">{{ review.visitor.name }}</div>
+                  <div class="review-date">{{ review.created_at|date:"d M Y" }}</div>
+                </div>
+              </div>
+              <div class="stars">
+                {% for i in "12345" %}
+                  {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                {% endfor %}
+              </div>
+            </div>
+            <p class="review-text">{{ review.comment }}</p>
+            <div class="review-actions">
+              <button class="helpful-btn" onclick="toggleHelpful(this)">
+                <span>👍</span> Helpful <span class="helpful-count">0</span>
+              </button>
+              {% if review.visitor.id == request.session.visitor_id %}
+              <form method="POST" action="{% url 'delete_review' review.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button class="delete-btn" type="submit">Delete</button>
+              </form>
+              {% endif %}
+            </div>
+          </div>
+          {% empty %}
+          <p style="color:var(--muted);font-size:.88rem;padding:20px 0;">No reviews yet. Be the first to share your experience!</p>
+          {% endfor %}
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div>
+
+      <!-- PARK INFO -->
+      <div class="sidebar-card fade-up">
+        <h4>Park Information</h4>
+        <div class="highlights">
+          <div class="highlight-item">
+            <div class="hi-icon">🕘</div>
+            <span>Open 9 AM – 9 PM Daily</span>
+          </div>
+          <div class="highlight-item">
+            <div class="hi-icon">📍</div>
+            <span>Fantasy Boulevard, Entertainment City</span>
+          </div>
+          <div class="highlight-item">
+            <div class="hi-icon">📞</div>
+            <span>+91 98765 43210</span>
+          </div>
+          <div class="highlight-item">
+            <div class="hi-icon">✉️</div>
+            <span>info@mysticworld.com</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SAFETY INFO -->
+      <div class="sidebar-card fade-up">
+        <h4>Safety & Guidelines</h4>
+        <div class="highlights">
+          <div class="highlight-item">
+            <div class="hi-icon">👤</div>
+            <span>Min. height: 120 cm</span>
+          </div>
+          <div class="highlight-item">
+            <div class="hi-icon">❤️</div>
+            <span>Not suitable for heart conditions</span>
+          </div>
+          <div class="highlight-item">
+            <div class="hi-icon">🤰</div>
+            <span>Not suitable for pregnant visitors</span>
+          </div>
+          <div class="highlight-item">
+            <div class="hi-icon">🧒</div>
+            <span>Children must be accompanied</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SIMILAR RIDES -->
+  {% if similar_rides %}
+  <div class="similar-section fade-up">
+    <h3>More Rides in {{ ride.zone.name }}</h3>
+    <div class="similar-grid">
+      {% for similar in similar_rides %}
+      <a href="{% url 'destination_detail' similar.id %}" class="similar-card">
+        <img src="{{ similar.image.url }}" alt="{{ similar.name }}">
+        <div class="similar-card-body">
+          <div class="similar-card-name">{{ similar.name }}</div>
+          <div class="similar-card-zone">{{ similar.zone.name }}</div>
+          <div class="similar-card-price">₹{{ similar.ticket_price }}</div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+<!-- STICKY BAR -->
+<div class="sticky-bar" id="stickyBar">
+  <div>
+    <div class="sticky-name">{{ ride.name }}</div>
+    <div class="sticky-price">₹{{ ride.ticket_price }} per ticket</div>
+  </div>
+  <a href="{% url 'booking' %}" class="sticky-btn">Book Now</a>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img src="{{ ride.image.url }}" alt="{{ ride.name }}" onclick="event.stopPropagation()">
+</div>
+
+<!-- SHARE TOAST -->
+<div class="toast" id="toast">Link copied to clipboard!</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">Mystic<span>World</span></div>
+      <p style="opacity:.5;font-size:.8rem;margin-top:10px;">Discover thrilling experiences across multiple zones.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Explore</h5>
+      <a href="{% url 'home' %}">Home</a>
+      <a href="{% url 'booking' %}">Booking</a>
+      <a href="{% url 'profile' %}">Account</a>
+    </div>
+    <div class="footer-col">
+      <h5>Contact</h5>
+      <a href="#">+91 98765 43210</a>
+      <a href="#">info@mysticworld.com</a>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2024 MysticWorld</div>
+</footer>
+
+<script>
+// ----- STAR RATING -----
+let selectedRating = 0;
+const stars = document.querySelectorAll('#starInput span');
+const ratingInput = document.getElementById('ratingValue');
+
+stars.forEach((star, i) => {
+  star.addEventListener('mouseenter', () => highlightStars(i + 1));
+  star.addEventListener('mouseleave', () => highlightStars(selectedRating));
+  star.addEventListener('click', () => {
+    selectedRating = i + 1;
+    ratingInput.value = selectedRating;
+    highlightStars(selectedRating);
+  });
+});
+
+function highlightStars(n) {
+  stars.forEach((s, i) => s.classList.toggle('active', i < n));
+}
+
+// ----- STICKY BAR -----
+const stickyBar = document.getElementById('stickyBar');
+const infoCard = document.querySelector('.info-card');
+window.addEventListener('scroll', () => {
+  const rect = infoCard.getBoundingClientRect();
+  stickyBar.classList.toggle('visible', rect.bottom < 0);
+});
+
+// ----- LIGHTBOX -----
+function openLightbox() {
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+// ----- SHARE -----
+function shareRide() {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  });
+}
+
+// ----- HELPFUL BUTTON -----
+function toggleHelpful(btn) {
+  const isLiked = btn.classList.toggle('liked');
+  const countEl = btn.querySelector('.helpful-count');
+  countEl.textContent = parseInt(countEl.textContent) + (isLiked ? 1 : -1);
+}
+
+// ----- SCROLL ANIMATIONS -----
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

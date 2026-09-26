@@ -1,0 +1,753 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Book Tickets — MysticWorld</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --white:#fff;--off:#f8f7f4;--border:#e2ddd6;--muted:#9a9189;
+      --body:#3d3530;--ink:#0d1b2a;--amber:#e8920a;--amber-d:#c97c06;
+      --amber-lt:rgba(232,146,10,.09);--teal:#0e7c6b;--r:6px;
+      --error:#dc2626;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--off);color:var(--body);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
+    a{text-decoration:none;color:inherit;}
+
+    /* ── HEADER ── */
+    header{background:var(--ink);border-bottom:1px solid rgba(255,255,255,.07);position:sticky;top:0;z-index:100;}
+    nav{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:1280px;margin:0 auto;padding:0 2.5rem;}
+    .logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:#fff;}
+    .logo span{color:var(--amber);}
+    .nav-right{display:flex;align-items:center;gap:.75rem;}
+    .nav-user{font-size:.8rem;color:rgba(255,255,255,.5);}
+    .nav-user strong{color:var(--amber);}
+    .nav-out{font-size:.75rem;color:rgba(255,255,255,.4);padding:.4rem .9rem;border:1px solid rgba(255,255,255,.1);border-radius:var(--r);transition:all .2s;}
+    .nav-out:hover{border-color:rgba(255,255,255,.28);color:#fff;}
+
+    /* ── PAGE HERO ── */
+    .page-hero{
+      background:linear-gradient(105deg,rgba(13,27,42,.97) 0%,rgba(13,27,42,.88) 50%,rgba(13,27,42,.75) 100%),
+               linear-gradient(135deg,#0d3a2e 0%,#1a4a3a 40%,#0d1b2a 100%);
+      padding:3rem 0 2.5rem;
+    }
+    .ph-inner{max-width:1280px;margin:0 auto;padding:0 2.5rem;}
+    .ph-crumb{font-size:.72rem;color:rgba(255,255,255,.35);margin-bottom:1rem;}
+    .ph-crumb a{color:rgba(255,255,255,.35);transition:color .2s;}
+    .ph-crumb a:hover{color:rgba(255,255,255,.6);}
+    .ph-eyebrow{font-size:.67rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);margin-bottom:.6rem;display:flex;align-items:center;gap:.5rem;}
+    .ph-eyebrow::before{content:'';display:block;width:18px;height:1.5px;background:var(--amber);}
+    .ph-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3vw,2.6rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:.55rem;}
+    .ph-title em{font-style:italic;color:var(--amber);}
+    .ph-sub{font-size:.88rem;color:rgba(255,255,255,.45);font-weight:300;line-height:1.7;}
+
+    /* ── STEP TABS ── */
+    .step-bar{background:var(--white);border-bottom:1px solid var(--border);}
+    .step-bar-inner{max-width:1280px;margin:0 auto;padding:0 2.5rem;display:flex;}
+    .step-tab{
+      display:flex;align-items:center;gap:.6rem;
+      padding:1rem 1.5rem 1rem 0;
+      font-size:.78rem;font-weight:600;color:var(--muted);
+      border-bottom:2px solid transparent;
+      transition:all .2s;cursor:default;margin-right:1.5rem;
+    }
+    .step-tab.active{color:var(--ink);border-bottom-color:var(--amber);}
+    .step-tab.done{color:var(--teal);}
+    .step-circle{
+      width:22px;height:22px;border-radius:50%;border:1.5px solid currentColor;
+      display:flex;align-items:center;justify-content:center;
+      font-size:.62rem;font-weight:700;flex-shrink:0;
+    }
+    .step-tab.done .step-circle{background:var(--teal);border-color:var(--teal);color:#fff;}
+    .step-tab.active .step-circle{background:var(--amber);border-color:var(--amber);color:#fff;}
+
+    /* ── LAYOUT ── */
+    .layout{
+      flex:1;display:grid;grid-template-columns:1fr 360px;
+      gap:2rem;max-width:1280px;margin:0 auto;
+      padding:2.5rem 2.5rem 5rem;align-items:start;
+      width:100%;
+    }
+
+    /* ── PANELS ── */
+    .panel{display:none;}
+    .panel.active{display:block;}
+
+    /* ── SECTION CARD ── */
+    .sc{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:1.5rem;}
+    .sc-hd{padding:1.35rem 1.75rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.85rem;}
+    .sc-num{width:28px;height:28px;border-radius:50%;background:var(--amber-lt);border:1.5px solid rgba(232,146,10,.3);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:var(--amber);flex-shrink:0;}
+    .sc-hd-text h3{font-size:.95rem;font-weight:700;color:var(--ink);}
+    .sc-hd-text p{font-size:.74rem;color:var(--muted);margin-top:.1rem;}
+    .sc-body{padding:1.75rem;}
+
+    /* ── ZONE TABS ── */
+    .zone-pills{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.4rem;}
+    .zpill{padding:.38rem .9rem;font-size:.72rem;font-weight:600;border:1.5px solid var(--border);border-radius:40px;color:var(--muted);cursor:pointer;background:var(--white);transition:all .18s;}
+    .zpill:hover{border-color:var(--ink);color:var(--ink);}
+    .zpill.active{background:var(--ink);border-color:var(--ink);color:#fff;}
+
+    /* ── RIDE ROWS ── */
+    .ride-rows{display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+    .rr{
+      background:var(--white);
+      display:grid;grid-template-columns:1fr auto auto;
+      gap:1.25rem;align-items:center;
+      padding:1.1rem 1.5rem;
+      transition:background .18s;
+    }
+    .rr:hover{background:var(--off);}
+    .rr.in-cart{background:rgba(232,146,10,.04);}
+    .rr.in-cart{border-left:3px solid var(--amber);}
+
+    .rr-zone{font-size:.62rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:.38rem;margin-bottom:.28rem;}
+    .rr-dot{width:6px;height:6px;border-radius:50%;display:inline-block;}
+    .d1{background:#7c3aed;}.d2{background:#dc2626;}.d3{background:#2563eb;}.d4{background:#16a34a;}.d5{background:#d97706;}
+    .rr-name{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--ink);margin-bottom:.3rem;}
+    .rr-tags{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;}
+    .thrill{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .6rem;border-radius:40px;}
+    .th-e{background:#fef2f2;color:#dc2626;border:1px solid #fecaca;}
+    .th-h{background:#fff7ed;color:#ea580c;border:1px solid #fed7aa;}
+    .th-m{background:#fffbeb;color:#d97706;border:1px solid #fde68a;}
+    .th-f{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;}
+    .rr-cap{font-size:.7rem;color:var(--muted);}
+
+    .rr-price{text-align:right;}
+    .rr-amt{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;color:var(--ink);line-height:1;}
+    .rr-per{font-size:.65rem;color:var(--muted);margin-top:.15rem;}
+
+    /* Qty stepper in ride row */
+    .rr-qty{display:flex;align-items:center;gap:0;border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;background:var(--white);}
+    .qbtn{width:34px;height:34px;border:none;background:transparent;cursor:pointer;font-size:1rem;color:var(--body);transition:background .15s;display:flex;align-items:center;justify-content:center;}
+    .qbtn:hover{background:var(--amber-lt);color:var(--amber);}
+    .qnum{width:36px;text-align:center;font-size:.85rem;font-weight:600;color:var(--ink);border:none;border-left:1px solid var(--border);border-right:1px solid var(--border);background:transparent;pointer-events:none;}
+
+    /* ── FORM FIELDS ── */
+    .frow2{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;}
+    .fg{margin-bottom:1.1rem;}
+    label{display:block;font-size:.76rem;font-weight:600;color:var(--ink);margin-bottom:.44rem;}
+    .iw{position:relative;}
+    .iico{position:absolute;left:.9rem;top:50%;transform:translateY(-50%);pointer-events:none;}
+    .iico svg{width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:1.75;transition:stroke .18s;}
+    input[type="text"],input[type="email"],input[type="tel"],input[type="date"],select{
+      width:100%;padding:.76rem 1rem .76rem 2.55rem;
+      font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;
+      background:var(--off);color:var(--ink);
+      border:1.5px solid var(--border);border-radius:var(--r);
+      outline:none;transition:border-color .18s,background .18s;
+    }
+    input[type="date"]{cursor:pointer;}
+    input:focus,select:focus{border-color:var(--amber);background:var(--white);}
+    .iw:focus-within .iico svg{stroke:var(--amber);}
+    input::placeholder{color:var(--muted);}
+    .fnote{font-size:.7rem;color:var(--muted);margin-top:.35rem;}
+
+    /* ── PAYMENT SECTION ── */
+    .card-visual{
+      background:linear-gradient(135deg,#1a2e42,#0d1b2a);
+      border-radius:10px;padding:1.75rem;margin-bottom:1.75rem;
+      position:relative;overflow:hidden;
+    }
+    .card-visual::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(232,146,10,.07);}
+    .card-chip{
+      width:36px;height:28px;border-radius:4px;
+      background:linear-gradient(135deg,#d4a843,#f5c842);
+      margin-bottom:1.25rem;
+    }
+    .card-num-preview{
+      font-family:'Plus Jakarta Sans',sans-serif;
+      font-size:1.15rem;font-weight:600;letter-spacing:.22em;
+      color:rgba(255,255,255,.85);margin-bottom:1.25rem;
+    }
+    .card-bot{display:flex;justify-content:space-between;align-items:flex-end;}
+    .card-name-preview{font-size:.72rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.1em;}
+    .card-exp-preview{font-size:.72rem;color:rgba(255,255,255,.55);letter-spacing:.1em;}
+    .card-brand{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:var(--amber);letter-spacing:.04em;}
+
+    .card-input-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+    .fg-full{margin-bottom:1.1rem;}
+    .cvv-note{font-size:.7rem;color:var(--muted);margin-top:.35rem;display:flex;align-items:center;gap:.35rem;}
+    .cvv-note svg{width:12px;height:12px;stroke:var(--muted);fill:none;stroke-width:2;}
+
+    /* Secure badges */
+    .secure-row{display:flex;align-items:center;gap:1.25rem;padding:.9rem 0;border-top:1px solid var(--border);margin-top:.5rem;flex-wrap:wrap;}
+    .sec-item{display:flex;align-items:center;gap:.4rem;font-size:.7rem;color:var(--muted);}
+    .sec-item svg{width:12px;height:12px;stroke:var(--teal);fill:none;stroke-width:2;}
+
+    /* Notice */
+    .notice{display:flex;align-items:flex-start;gap:.7rem;background:rgba(14,124,107,.06);border:1px solid rgba(14,124,107,.2);border-radius:var(--r);padding:.9rem 1.1rem;font-size:.78rem;color:var(--body);line-height:1.6;margin-top:1.25rem;}
+    .notice svg{width:14px;height:14px;stroke:var(--teal);fill:none;stroke-width:2;flex-shrink:0;margin-top:1px;}
+
+    /* Alert */
+    .alert{display:flex;align-items:flex-start;gap:.6rem;background:#fef2f2;border:1px solid #fecaca;border-radius:var(--r);padding:.85rem 1rem;font-size:.8rem;color:var(--error);margin-bottom:1.25rem;}
+    .alert svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;margin-top:1px;}
+
+    /* Step nav buttons */
+    .step-nav{display:flex;justify-content:flex-end;gap:.75rem;margin-top:.5rem;}
+    .btn-back{padding:.78rem 1.5rem;background:transparent;border:1.5px solid var(--border);color:var(--body);font-size:.82rem;font-weight:600;border-radius:var(--r);cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:.5rem;}
+    .btn-back:hover{border-color:var(--ink);color:var(--ink);}
+    .btn-back svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;}
+    .btn-next{padding:.78rem 2rem;background:var(--amber);color:#fff;font-size:.82rem;font-weight:600;border-radius:var(--r);cursor:pointer;border:none;transition:all .18s;display:flex;align-items:center;gap:.5rem;}
+    .btn-next:hover{background:var(--amber-d);transform:translateY(-1px);}
+    .btn-next svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2;}
+    .btn-confirm{padding:.88rem 2.5rem;background:var(--amber);color:#fff;font-size:.85rem;font-weight:600;border-radius:var(--r);cursor:pointer;border:none;transition:all .18s;display:flex;align-items:center;gap:.6rem;width:100%;justify-content:center;}
+    .btn-confirm:hover{background:var(--amber-d);box-shadow:0 6px 20px rgba(232,146,10,.3);}
+    .btn-confirm svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;}
+
+    /* ── ORDER SUMMARY SIDEBAR ── */
+    .sidebar{position:sticky;top:78px;}
+    .sum-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+    .sum-hd{background:var(--ink);padding:1.25rem 1.5rem;}
+    .sum-hd h3{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:#fff;}
+    .sum-hd p{font-size:.72rem;color:rgba(255,255,255,.4);margin-top:.2rem;}
+    .sum-body{padding:1.4rem 1.5rem;}
+
+    .cart-empty{text-align:center;padding:2rem 1rem;font-size:.82rem;color:var(--muted);font-style:italic;}
+    .cart-items{display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:1.25rem;}
+    .cart-item{background:var(--white);padding:.9rem 1.1rem;}
+    .ci-name{font-size:.85rem;font-weight:600;color:var(--ink);margin-bottom:.2rem;}
+    .ci-meta{display:flex;justify-content:space-between;align-items:center;font-size:.75rem;color:var(--muted);}
+    .ci-subtotal{font-weight:600;color:var(--ink);}
+
+    .sum-totals{display:flex;flex-direction:column;gap:.65rem;margin-bottom:1.25rem;}
+    .st-row{display:flex;justify-content:space-between;font-size:.82rem;}
+    .st-label{color:var(--muted);}
+    .st-val{font-weight:600;color:var(--ink);}
+    .sum-divider{height:1px;background:var(--border);margin:.25rem 0;}
+    .st-total{font-size:1rem;font-weight:700;}
+    .st-total-amt{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--ink);}
+
+    .sum-trust{padding:1.1rem 1.5rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:.55rem;}
+    .st-item{display:flex;align-items:center;gap:.55rem;font-size:.72rem;color:var(--muted);}
+    .st-item svg{width:12px;height:12px;stroke:var(--teal);fill:none;stroke-width:2;flex-shrink:0;}
+
+    /* Login prompt */
+    .login-prompt{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:3rem 2rem;text-align:center;}
+    .lp-ico{width:52px;height:52px;border-radius:50%;background:var(--amber-lt);border:1px solid rgba(232,146,10,.25);display:flex;align-items:center;justify-content:center;margin:0 auto 1.1rem;}
+    .lp-ico svg{width:20px;height:20px;stroke:var(--amber);fill:none;stroke-width:1.75;}
+    .login-prompt h3{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--ink);margin-bottom:.45rem;}
+    .login-prompt p{font-size:.83rem;color:var(--muted);line-height:1.7;max-width:280px;margin:0 auto 1.5rem;}
+    .lp-btns{display:flex;justify-content:center;gap:.65rem;flex-wrap:wrap;}
+    .btn-signin{padding:.75rem 1.6rem;background:var(--amber);color:#fff;font-size:.82rem;font-weight:600;border-radius:var(--r);transition:background .18s;}
+    .btn-signin:hover{background:var(--amber-d);}
+    .btn-reg{padding:.75rem 1.6rem;background:transparent;border:1.5px solid var(--border);color:var(--body);font-size:.82rem;font-weight:600;border-radius:var(--r);transition:all .18s;}
+    .btn-reg:hover{border-color:var(--ink);color:var(--ink);}
+
+    @media(max-width:960px){.layout{grid-template-columns:1fr;padding:2rem 1.5rem 4rem;}.sidebar{position:static;}}
+    @media(max-width:560px){.frow2,.card-input-row{grid-template-columns:1fr;}.step-bar-inner{overflow-x:auto;white-space:nowrap;}.step-tab{font-size:.72rem;padding:.85rem .75rem .85rem 0;}}
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <nav>
+    <a href="{% url 'home' %}" class="logo">Mystic<span>World</span></a>
+    <div class="nav-right">
+      {% if request.session.visitor_id %}
+        <span class="nav-user">Hi, <strong>{{ request.session.visitor_name }}</strong></span>
+        <a href="{% url 'logout' %}" class="nav-out">Sign Out</a>
+      {% else %}
+        <a href="{% url 'login' %}" class="nav-out">Sign In</a>
+      {% endif %}
+    </div>
+  </nav>
+</header>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="ph-inner">
+    <div class="ph-crumb"><a href="{% url 'home' %}">Home</a> / Book Tickets</div>
+    <div class="ph-eyebrow">Book Your Visit</div>
+    <h1 class="ph-title">Reserve Your <em>Perfect Day</em></h1>
+    <p class="ph-sub">Select rides, fill your details, and confirm your booking in 3 easy steps.</p>
+  </div>
+</div>
+
+<!-- STEP BAR -->
+<div class="step-bar">
+  <div class="step-bar-inner">
+    <div class="step-tab active" id="stab1">
+      <div class="step-circle">1</div> Select Rides
+    </div>
+    <div class="step-tab" id="stab2">
+      <div class="step-circle">2</div> Your Details
+    </div>
+    <div class="step-tab" id="stab3">
+      <div class="step-circle">3</div> Payment
+    </div>
+  </div>
+</div>
+
+{% if not request.session.visitor_id %}
+<!-- NOT LOGGED IN -->
+<div style="max-width:1280px;margin:3rem auto;padding:0 2.5rem;">
+  <div class="login-prompt">
+    <div class="lp-ico"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+    <h3>Sign in to Book</h3>
+    <p>You need a MysticWorld account to book tickets. It is free and takes under a minute.</p>
+    <div class="lp-btns">
+      <a href="{% url 'login' %}" class="btn-signin">Sign In</a>
+      <a href="{% url 'register' %}" class="btn-reg">Create Account</a>
+    </div>
+  </div>
+</div>
+
+{% else %}
+
+<form method="POST" action="{% url 'booking' %}" id="mainForm">
+{% csrf_token %}
+
+<div class="layout">
+
+  <!-- LEFT -->
+  <div>
+
+    <!-- ══ STEP 1 — RIDES ══ -->
+    <div class="panel active" id="panel1">
+
+      <div class="sc">
+        <div class="sc-hd">
+          <div class="sc-num">1</div>
+          <div class="sc-hd-text">
+            <h3>Select Rides &amp; Zones</h3>
+            <p>Add multiple rides from any zone. Set quantity per ride.</p>
+          </div>
+        </div>
+        <div class="sc-body">
+
+          <!-- Zone filter -->
+          <div class="zone-pills">
+            <button type="button" class="zpill active" onclick="filterZone('all',this)">All Zones</button>
+            <button type="button" class="zpill" onclick="filterZone('Mystic Castle',this)">🏰 Mystic Castle</button>
+            <button type="button" class="zpill" onclick="filterZone('Thrill Valley',this)">💥 Thrill Valley</button>
+            <button type="button" class="zpill" onclick="filterZone('Aqua Realm',this)">🌊 Aqua Realm</button>
+            <button type="button" class="zpill" onclick="filterZone('Kidtopia',this)">🎈 Kidtopia</button>
+            <button type="button" class="zpill" onclick="filterZone('Adventure Woods',this)">🌲 Adventure Woods</button>
+          </div>
+
+          <!-- Rides -->
+          <div class="ride-rows" id="rideRows">
+            {% for ride in rides %}
+            <div class="rr" id="rr-{{ride.id}}"
+                 data-id="{{ride.id}}"
+                 data-name="{{ride.name}}"
+                 data-zone="{{ride.zone.name}}"
+                 data-price="{{ride.ticket_price}}"
+                 data-thrill="{{ride.thrill_level}}">
+              <div>
+                <div class="rr-zone">
+                  <span class="rr-dot
+                    {% if ride.zone.name == 'Mystic Castle' %}d1
+                    {% elif ride.zone.name == 'Thrill Valley' %}d2
+                    {% elif ride.zone.name == 'Aqua Realm' %}d3
+                    {% elif ride.zone.name == 'Kidtopia' %}d4
+                    {% else %}d5{% endif %}"></span>
+                  {{ride.zone.name}}
+                </div>
+                <div class="rr-name">{{ride.name}}</div>
+                <div class="rr-tags">
+                  <span class="thrill
+                    {% if ride.thrill_level == 'Extreme' %}th-e
+                    {% elif ride.thrill_level == 'High' %}th-h
+                    {% elif ride.thrill_level == 'Moderate' %}th-m
+                    {% else %}th-f{% endif %}">
+                    {{ride.thrill_level}}
+                  </span>
+                  <span class="rr-cap">Capacity: {{ride.capacity}}</span>
+                </div>
+              </div>
+              <div class="rr-price">
+                <div class="rr-amt">₹{{ride.ticket_price}}</div>
+                <div class="rr-per">per ticket</div>
+              </div>
+              <div class="rr-qty">
+                <button type="button" class="qbtn" onclick="changeQty({{ride.id}},-1)">−</button>
+                <span class="qnum" id="qnum-{{ride.id}}">0</span>
+                <button type="button" class="qbtn" onclick="changeQty({{ride.id}},1)">+</button>
+              </div>
+            </div>
+            {% empty %}
+            <div style="padding:2rem;text-align:center;color:var(--muted);font-size:.85rem;">No rides available. Please check back soon.</div>
+            {% endfor %}
+          </div>
+
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button type="button" class="btn-next" onclick="goStep(2)">
+          Continue to Details
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ STEP 2 — VISITOR DETAILS ══ -->
+    <div class="panel" id="panel2">
+
+      <div class="sc">
+        <div class="sc-hd">
+          <div class="sc-num">2</div>
+          <div class="sc-hd-text">
+            <h3>Your Details</h3>
+            <p>Booking confirmation will be sent to the email you enter here.</p>
+          </div>
+        </div>
+        <div class="sc-body">
+
+          {% if error %}
+          <div class="alert">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            {{error}}
+          </div>
+          {% endif %}
+
+          <div class="fg">
+            <label for="f_name">Full Name</label>
+            <div class="iw">
+              <div class="iico"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+              <input type="text" id="f_name" name="visitor_name" placeholder="Your full name" required value="{{ request.session.visitor_name }}"/>
+            </div>
+          </div>
+
+          <div class="frow2">
+            <div class="fg">
+              <label for="f_email">Email Address</label>
+              <div class="iw">
+                <div class="iico"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                <input type="email" id="f_email" name="visitor_email" placeholder="you@email.com" required/>
+              </div>
+              <div class="fnote">Confirmation email will be sent here</div>
+            </div>
+            <div class="fg">
+              <label for="f_phone">Phone Number</label>
+              <div class="iw">
+                <div class="iico"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.1 6.1l.9-.9a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+                <input type="tel" id="f_phone" name="visitor_phone" placeholder="+91 98765 43210" required/>
+              </div>
+            </div>
+          </div>
+
+          <div class="fg">
+            <label for="f_date">Visit Date</label>
+            <div class="iw">
+              <div class="iico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+              <input type="date" id="f_date" name="visit_date" required style="padding-left:2.55rem;"/>
+            </div>
+          </div>
+
+          <div class="notice">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Tickets are non-refundable once confirmed. Please verify your ride selection and visit date before proceeding.
+          </div>
+
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button type="button" class="btn-back" onclick="goStep(1)">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          Back
+        </button>
+        <button type="button" class="btn-next" onclick="goStep(3)">
+          Continue to Payment
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ STEP 3 — PAYMENT ══ -->
+    <div class="panel" id="panel3">
+
+      <div class="sc">
+        <div class="sc-hd">
+          <div class="sc-num">3</div>
+          <div class="sc-hd-text">
+            <h3>Payment Details</h3>
+            <p>Enter your card information. Your details are encrypted and secure.</p>
+          </div>
+        </div>
+        <div class="sc-body">
+
+          <!-- Card visual preview -->
+          <div class="card-visual">
+            <div class="card-chip"></div>
+            <div class="card-num-preview" id="cardNumPreview">•••• &nbsp; •••• &nbsp; •••• &nbsp; ••••</div>
+            <div class="card-bot">
+              <div>
+                <div class="card-name-preview" id="cardNamePreview">YOUR NAME</div>
+                <div class="card-exp-preview" id="cardExpPreview">MM / YY</div>
+              </div>
+              <div class="card-brand" id="cardBrand">VISA</div>
+            </div>
+          </div>
+
+          <!-- Card holder name -->
+          <div class="fg-full fg">
+            <label for="card_name">Cardholder Name</label>
+            <div class="iw">
+              <div class="iico"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+              <input type="text" id="card_name" name="card_name" placeholder="Name as on card" required autocomplete="cc-name"
+                     oninput="document.getElementById('cardNamePreview').textContent=this.value.toUpperCase()||'YOUR NAME'"/>
+            </div>
+          </div>
+
+          <!-- Card number -->
+          <div class="fg-full fg">
+            <label for="card_number">Card Number</label>
+            <div class="iw">
+              <div class="iico"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+              <input type="text" id="card_number" name="card_number" placeholder="1234  5678  9012  3456"
+                     maxlength="19" required autocomplete="cc-number"
+                     oninput="formatCard(this)" style="letter-spacing:.08em;"/>
+            </div>
+          </div>
+
+          <!-- Expiry + CVV -->
+          <div class="card-input-row">
+            <div class="fg">
+              <label for="card_expiry">Expiry Date</label>
+              <div class="iw">
+                <div class="iico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+                <input type="text" id="card_expiry" name="card_expiry" placeholder="MM / YY" maxlength="7" required autocomplete="cc-exp"
+                       oninput="formatExpiry(this)"
+                       onchange="document.getElementById('cardExpPreview').textContent=this.value||'MM / YY'"/>
+              </div>
+            </div>
+            <div class="fg">
+              <label for="card_cvv">CVV / CVC</label>
+              <div class="iw">
+                <div class="iico"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                <input type="password" id="card_cvv" name="card_cvv" placeholder="•••" maxlength="4" required autocomplete="cc-csc"/>
+              </div>
+              <div class="cvv-note">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                3 or 4 digits on back of card
+              </div>
+            </div>
+          </div>
+
+          <!-- Secure badges -->
+          <div class="secure-row">
+            <div class="sec-item"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>256-bit SSL Encrypted</div>
+            <div class="sec-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>PCI DSS Compliant</div>
+            <div class="sec-item"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Secure Checkout</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Hidden fields for cart data -->
+      <div id="hiddenCartFields"></div>
+
+      <div class="step-nav" style="flex-direction:column;gap:1rem;">
+        <button type="submit" class="btn-confirm" id="confirmBtn">
+          <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          Confirm &amp; Pay ₹<span id="finalTotal">0</span>
+        </button>
+        <button type="button" class="btn-back" style="align-self:center;" onclick="goStep(2)">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          Back to Details
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /left -->
+
+  <!-- RIGHT SIDEBAR -->
+  <div class="sidebar">
+    <div class="sum-card">
+      <div class="sum-hd">
+        <h3>Order Summary</h3>
+        <p id="sum-sub-text">No rides selected yet</p>
+      </div>
+      <div class="sum-body">
+
+        <div class="cart-empty" id="cartEmpty">Add rides to see your order here</div>
+
+        <div class="cart-items" id="cartItems" style="display:none;"></div>
+
+        <div class="sum-totals" id="sumTotals" style="display:none;">
+          <div class="st-row">
+            <span class="st-label">Subtotal</span>
+            <span class="st-val" id="sumSubtotal">₹0</span>
+          </div>
+          <div class="st-row">
+            <span class="st-label">Booking Fee</span>
+            <span class="st-val">₹0</span>
+          </div>
+          <div class="sum-divider"></div>
+          <div class="st-row">
+            <span class="st-label st-total">Total</span>
+            <span class="st-total-amt" id="sumTotal">₹0</span>
+          </div>
+        </div>
+
+      </div>
+      <div class="sum-trust">
+        <div class="st-item"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Safe &amp; secure booking</div>
+        <div class="st-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Instant confirmation</div>
+        <div class="st-item"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email confirmation sent</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /layout -->
+</form>
+
+{% endif %}
+
+<script>
+  // ── Cart state
+  const cart = {};  // { rideId: { name, zone, price, qty } }
+
+  function changeQty(id, delta) {
+    const row = document.getElementById('rr-' + id);
+    const qEl = document.getElementById('qnum-' + id);
+    const cur = cart[id] ? cart[id].qty : 0;
+    const newQty = Math.max(0, Math.min(10, cur + delta));
+
+    if (newQty === 0) {
+      delete cart[id];
+      row.classList.remove('in-cart');
+    } else {
+      cart[id] = {
+        id,
+        name: row.dataset.name,
+        zone: row.dataset.zone,
+        price: parseInt(row.dataset.price),
+        qty: newQty
+      };
+      row.classList.add('in-cart');
+    }
+    qEl.textContent = newQty;
+    updateSummary();
+  }
+
+  function updateSummary() {
+    const ids = Object.keys(cart);
+    const cartEl = document.getElementById('cartItems');
+    const emptyEl = document.getElementById('cartEmpty');
+    const totalsEl = document.getElementById('sumTotals');
+    const subText = document.getElementById('sum-sub-text');
+    const hiddenFields = document.getElementById('hiddenCartFields');
+
+    if (ids.length === 0) {
+      cartEl.style.display = 'none';
+      totalsEl.style.display = 'none';
+      emptyEl.style.display = 'block';
+      subText.textContent = 'No rides selected yet';
+      document.getElementById('sumSubtotal').textContent = '₹0';
+      document.getElementById('sumTotal').textContent = '₹0';
+      document.getElementById('finalTotal').textContent = '0';
+      hiddenFields.innerHTML = '';
+      return;
+    }
+
+    let total = 0;
+    let html = '';
+    let hiddenHtml = '';
+    let rideCount = 0;
+
+    ids.forEach(id => {
+      const item = cart[id];
+      const sub = item.price * item.qty;
+      total += sub;
+      rideCount += item.qty;
+      html += `<div class="cart-item">
+        <div class="ci-name">${item.name}</div>
+        <div class="ci-meta">
+          <span>${item.zone} &bull; ${item.qty} ticket${item.qty>1?'s':''}</span>
+          <span class="ci-subtotal">₹${sub.toLocaleString('en-IN')}</span>
+        </div>
+      </div>`;
+      hiddenHtml += `<input type="hidden" name="ride_ids" value="${item.id}"/>`;
+      hiddenHtml += `<input type="hidden" name="quantities" value="${item.qty}"/>`;
+    });
+
+    cartEl.innerHTML = html;
+    cartEl.style.display = '';
+    emptyEl.style.display = 'none';
+    totalsEl.style.display = '';
+    hiddenFields.innerHTML = hiddenHtml;
+
+    document.getElementById('sumSubtotal').textContent = '₹' + total.toLocaleString('en-IN');
+    document.getElementById('sumTotal').textContent = '₹' + total.toLocaleString('en-IN');
+    document.getElementById('finalTotal').textContent = total.toLocaleString('en-IN');
+    subText.textContent = `${ids.length} ride${ids.length>1?'s':''}, ${rideCount} ticket${rideCount>1?'s':''}`;
+  }
+
+  // ── Zone filter
+  function filterZone(zone, btn) {
+    document.querySelectorAll('.zpill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.rr').forEach(row => {
+      row.style.display = (zone === 'all' || row.dataset.zone === zone) ? '' : 'none';
+    });
+  }
+
+  // ── Step navigation
+  function goStep(n) {
+    // Validate step 1 → must have at least one ride
+    if (n > 1 && Object.keys(cart).length === 0) {
+      alert('Please select at least one ride before continuing.');
+      return;
+    }
+    // Validate step 2 → check required fields
+    if (n > 2) {
+      const name = document.getElementById('f_name').value.trim();
+      const email = document.getElementById('f_email').value.trim();
+      const phone = document.getElementById('f_phone').value.trim();
+      const date = document.getElementById('f_date').value;
+      if (!name || !email || !phone || !date) {
+        alert('Please fill in all your details before continuing.');
+        return;
+      }
+    }
+
+    for (let i = 1; i <= 3; i++) {
+      document.getElementById('panel' + i).classList.remove('active');
+      const tab = document.getElementById('stab' + i);
+      tab.classList.remove('active', 'done');
+      if (i < n) tab.classList.add('done');
+      else if (i === n) tab.classList.add('active');
+    }
+    document.getElementById('panel' + n).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── Card number formatter
+  function formatCard(el) {
+    let v = el.value.replace(/\D/g, '').substring(0, 16);
+    el.value = v.replace(/(.{4})/g, '$1  ').trim();
+    const masked = v.length > 0
+      ? v.substring(0,4).padEnd(16,'•').replace(/(.{4})/g,'$1 ').trim()
+      : '•••• •••• •••• ••••';
+    document.getElementById('cardNumPreview').textContent = masked;
+
+    // Detect card brand
+    const brand = v.startsWith('4') ? 'VISA' : v.startsWith('5') ? 'MASTERCARD' : v.startsWith('3') ? 'AMEX' : 'VISA';
+    document.getElementById('cardBrand').textContent = brand;
+  }
+
+  function formatExpiry(el) {
+    let v = el.value.replace(/\D/g, '').substring(0, 4);
+    if (v.length >= 2) v = v.substring(0,2) + ' / ' + v.substring(2);
+    el.value = v;
+    document.getElementById('cardExpPreview').textContent = v || 'MM / YY';
+  }
+
+  // Set min date
+  const today = new Date().toISOString().split('T')[0];
+  const di = document.getElementById('f_date');
+  if (di) di.min = today;
+</script>
+
+</body>
+</html>
